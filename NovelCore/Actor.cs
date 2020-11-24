@@ -59,9 +59,9 @@ namespace NovelCore
         {
             if(Position!= point)
             {
-                Position = point;
                 Canvas.SetLeft(Scene, point.X);
                 Canvas.SetBottom(Scene, point.Y);
+                Position = point;
             }
         }
     }

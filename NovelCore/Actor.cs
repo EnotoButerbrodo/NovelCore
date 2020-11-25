@@ -24,12 +24,14 @@ namespace NovelCore
                 Spot.Children.Add(Appearance[i]);
             }
             Scene = scene;
+            Sprites = new Dictionary<string, BitmapImage>();
             
         }
         public string Name { get; private set; }
         public SolidColorBrush Color { get; private set; }
-        string Speech { get; set; }
         Image[] Appearance { get; set; }
+
+        Dictionary<string, BitmapImage> Sprites;
         Grid Spot { get; set; }
         Point Position { get; set; }
         Canvas Scene { get; set; }
@@ -42,9 +44,13 @@ namespace NovelCore
         {
             Scene.Children.Remove(Spot);
         }
-        public void SetSpeech(string text)
+        public bool SpriteInCollection(string name)
         {
-            Speech = text;
+            return Sprites.ContainsKey(name);
+        }
+        public void AddSprite(string name, BitmapImage image)
+        {
+            Sprites.Add(name, image);
         }
         public void SetAppearance(BitmapImage emotionImage,
             BitmapImage bodyLeftImage,
@@ -53,6 +59,15 @@ namespace NovelCore
             Appearance[0].Source = emotionImage;
             Appearance[1].Source = bodyLeftImage;
             Appearance[2].Source = bodyRightImage;
+        }
+
+        public void SetAppearance(string emotionName,
+            string bodyLeftName,
+            string bodyRightName)
+        {
+            Appearance[0].Source = Sprites[emotionName];
+            Appearance[1].Source = Sprites[bodyLeftName];
+            Appearance[2].Source = Sprites[bodyRightName];
         }
 
         public void SetPosition(Point point)

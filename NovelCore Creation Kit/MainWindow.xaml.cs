@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace NovelCore
+namespace NovelCore_Creation_Kit
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -23,11 +23,6 @@ namespace NovelCore
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        void ReadTheEpisode(string name)
-        {
-
         }
     }
 }

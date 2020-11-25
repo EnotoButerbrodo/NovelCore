@@ -3,15 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>NovelCore_Creation_Kit</RootNamespace>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="NovelCore_Creator.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="NovelCore_Creator.xaml" />
-  </ItemGroup>
 
 </Project>

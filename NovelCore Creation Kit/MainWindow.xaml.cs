@@ -35,8 +35,7 @@ namespace NovelCore_Creation_Kit
         {
             using (var fs = File.Open(path, FileMode.OpenOrCreate))
             {
-
-                string ser_episode = JsonSerializer.Serialize(episode);//, new JsonSerializerOptions { IgnoreNullValues = true }
+                string ser_episode = JsonSerializer.Serialize<Episode>(episode, new JsonSerializerOptions { IgnoreNullValues = true });
                 using (var writer = new StreamWriter(fs))
                 {
                     writer.Write(ser_episode);
@@ -52,7 +51,7 @@ namespace NovelCore_Creation_Kit
             scenes.Add(new Scene(
                 SceneType.Text,
                 new string[] { "Это первый фрейм" },
-                new Dictionary<string, ActorArgs>() { ["Monika"] = new ActorArgs("Default.png") },
+                new Dictionary<string, ActorArgs>() { ["Monika"] = new ActorArgs("Default.png")},
                 new BackgroundArgs("Class1.png")
                 )
             );
@@ -63,7 +62,7 @@ namespace NovelCore_Creation_Kit
                 new Dictionary<string, string[]> { ["Monika"] = new string[] { "Default.png" } },
                 scenes.ToArray()
                 );
-            SaveEpisode("test.json", NewEpisode);
+            SaveEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json", NewEpisode);
         }
     }
 }

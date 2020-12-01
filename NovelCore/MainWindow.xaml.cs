@@ -26,7 +26,7 @@ namespace NovelCore
         {
             InitializeComponent();
         }
-
+        Episode LoadedEpisode;
         void PlayScene()
         {
             //Запретить переключение сцены
@@ -51,6 +51,15 @@ namespace NovelCore
                     return JsonSerializer.Deserialize<Episode>(file, new JsonSerializerOptions { IgnoreNullValues = true });
                 }
             }
+        }
+        void TestLoad()
+        {
+            LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            TestLoad();
         }
     }
 }

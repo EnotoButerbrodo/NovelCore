@@ -11,6 +11,7 @@ namespace NovelCore
     [Serializable]
     public class Scene
     {
+        public Scene() : base() { }
         public Scene(SceneType type, string[] text, Dictionary<string, ActorArgs> actorConfig,
             BackgroundArgs backConfig)
         {
@@ -26,9 +27,10 @@ namespace NovelCore
     [Serializable]
     public class ActorArgs
     {
+        public ActorArgs() : base() { }
         public ActorArgs(string sprite, AnimationEventArgs args = null)
         {
-            Sprite = Sprite;
+            Sprite = sprite;
         }
         public string Sprite { get; set; }
         public AnimationEventArgs ActorAnimationArgs { get; set; }
@@ -38,6 +40,7 @@ namespace NovelCore
     [Serializable]
     public class BackgroundArgs
     {
+        public BackgroundArgs() : base() { }
         public BackgroundArgs(string name)
         {
             Background = name;

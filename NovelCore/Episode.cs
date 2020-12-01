@@ -9,6 +9,7 @@ namespace NovelCore
     [Serializable]
     public class Episode
     {
+        public Episode() : base() { }
         public Episode(
             string name,
             string[] usedBackgrouds,

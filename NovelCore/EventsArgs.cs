@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace NovelCore
 {
+    [Serializable]
     public class AnimationEventArgs
     {
         public Point point { get; }
         public Timing timing { get; }
         public double? Speed { get; }
+        public string ScriptName { get; }
     }
 
     public enum Timing

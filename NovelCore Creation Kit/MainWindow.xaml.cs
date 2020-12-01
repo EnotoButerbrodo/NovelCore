@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NovelCore;
+using Ionic.Zip;
+using System.IO;
 
 namespace NovelCore_Creation_Kit
 
@@ -25,21 +28,42 @@ namespace NovelCore_Creation_Kit
         public MainWindow()
         {
             InitializeComponent();
+            TestSave();
         }
 
-        void PlayScene()
+        void SaveEpisode(string path, Episode episode)
         {
-            //Запретить переключение сцены
-            //Задать или сменить задний фон
-            //Задать если нужно декорации
-            //Задать и применить если нужно анимации для сцены
-            //Расставить персонажей на сцену
-            //Задать им нужные спрайты
-            //Применить к ним AtFirst анимации
-            //Применить анимации отображения текста
-            //Применить OnTheEnd анимации
-            //Разрешить переключение сцены
+            using (var fs = File.Open(path, FileMode.OpenOrCreate))
+            {
+
+                string ser_episode = JsonSerializer.Serialize(episode);//, new JsonSerializerOptions { IgnoreNullValues = true }
+                using (var writer = new StreamWriter(fs))
+                {
+                    writer.Write(ser_episode);
+                }
+            }
         }
 
+        void TestSave()
+        {
+            //Создать сцену
+            //СОздать эпизод и сохранить его
+            List<Scene> scenes = new List<Scene>();
+            scenes.Add(new Scene(
+                SceneType.Text,
+                new string[] { "Это первый фрейм" },
+                new Dictionary<string, ActorArgs>() { ["Monika"] = new ActorArgs("Default.png") },
+                new BackgroundArgs("Class1.png")
+                )
+            );
+
+            Episode NewEpisode = new Episode(
+                "FirstEpisode",
+                new string[] { "Class1.png" },
+                new Dictionary<string, string[]> { ["Monika"] = new string[] { "Default.png" } },
+                scenes.ToArray()
+                );
+            SaveEpisode("test.json", NewEpisode);
+        }
     }
 }

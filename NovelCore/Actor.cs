@@ -7,7 +7,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using Image = System.Windows.Controls.Image;
-using NovelCore;
+
+
 
 namespace NovelCore
 {
@@ -28,7 +29,7 @@ namespace NovelCore
             Scene = scene;
             
         }
-        public string Name { get; private set; }
+        public string Name { get; set; }
         Image[] Appearance { get; set; }
 
         Dictionary<string, BitmapImage> Sprites;
@@ -36,7 +37,7 @@ namespace NovelCore
         Point Position { get; set; }
         Canvas Scene { get; set; } // Сцена, на которой будет персонаж
 
-        public event Action<AnimationEventArgs> AnimationEvent;
+        public event Action<AnimationEventArgs> Animation;
         public void EnterTheScene()
         {
             if(!Scene.Children.Contains(Spot))
@@ -54,6 +55,10 @@ namespace NovelCore
         public void AddSprite(string name, BitmapImage image)
         {
             Sprites.Add(name, image);
+        }
+        public void RemoveSprite(string name)
+        {
+            Sprites.Remove(name);
         }
         public void SetAppearance(string emotionName,
             string bodyLeftName = null,
@@ -75,7 +80,7 @@ namespace NovelCore
         {
             if(Position!= args.point)
             {
-                AnimationEvent?.Invoke(args);
+                Animation?.Invoke(args);
                 Position = args.point;
             }
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,9 +27,30 @@ namespace NovelCore
             InitializeComponent();
         }
 
-        void ReadTheEpisode(string name)
+        void PlayScene()
         {
+            //Запретить переключение сцены
+            //Задать или сменить задний фон
+            //Задать если нужно декорации
+            //Задать и применить если нужно анимации для сцены
+            //Расставить персонажей на сцену
+            //Задать им нужные спрайты
+            //Применить к ним AtFirst анимации
+            //Применить анимации отображения текста
+            //Применить OnTheEnd анимации
+            //Разрешить переключение сцены
+        }
 
+        Episode LoadEpisode(string path)
+        {
+            using (FileStream fs = File.Open(path, FileMode.Open))
+            {
+                using (var reader = new StreamReader(fs))
+                {
+                    string file = reader.ReadToEnd();
+                    return JsonSerializer.Deserialize<Episode>(file, new JsonSerializerOptions { IgnoreNullValues = true });
+                }
+            }
         }
     }
 }

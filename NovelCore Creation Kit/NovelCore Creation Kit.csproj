@@ -15,4 +15,12 @@
     <Compile Remove="Episode.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NovelCore\NovelCore.csproj" />
+  </ItemGroup>
+
 </Project>

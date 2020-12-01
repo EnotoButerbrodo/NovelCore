@@ -5,40 +5,25 @@ using System.Text;
 
 namespace NovelCore
 {
-    class Scene
+    public class Scene
     {
-        SceneType Type { get; set; }
-        public string Background { get; set; }
-        public ActorInfo[] Actors { get; set; }
+        SceneType Type { get; }
+        public string Background { get; }
+        public Dictionary<string, ActorInfo> ActorsConfig { get;  }
+        public BackgroundInfo BackgroundConfig { get; }
     }
-    public struct ActorInfo
+    public class ActorInfo
     {
-        public ActorInfo(string name, string[] sprites, Point position, string speech,
-            ActorAction action)
-        {
-            Name = name;
-            Sprites = sprites;
-            Position = position;
-            Speech = speech;
-            Action = action;
-        }
-        public string Name { get; set; }
-        public string[] Sprites { get; set; }
-        public Point? Position { get; set; }
-        public string Speech { get; set; }
-        public ActorAction? Action { get; set; }
+        public string Sprite { get;}
+        public AnimationEventArgs ActorAnimationArgs { get; }
+        public string AnimationScriptName { get; }
 
-        public enum ActorAction
-        {
-            Enter,
-            Leave
-        }
     }
 
     public struct BackgroundInfo
     {
-        public string Background { get; set; }
-
+        public string Background;
+        public AnimationEventArgs BackAnimationArgs { get; }
     }
     enum SceneType
     {

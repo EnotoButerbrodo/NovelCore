@@ -6,15 +6,16 @@ using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
+using Image = System.Windows.Controls.Image;
+using NovelCore;
 
 namespace NovelCore
 {
     public class Actor
     {
-        public Actor(string name, SolidColorBrush color, ref Canvas scene)
+        public Actor(string name, Canvas scene)
         {
             Name = name;
-            Color = color;
             Appearance = new Image[3];
             Spot = new Grid();
             for(byte i = 0;i < 3; i++)
@@ -23,26 +24,28 @@ namespace NovelCore
                 Appearance[i].Stretch = Stretch.Fill;
                 Spot.Children.Add(Appearance[i]);
             }
-            Scene = scene;
             Sprites = new Dictionary<string, BitmapImage>();
+            Scene = scene;
             
         }
         public string Name { get; private set; }
-        public SolidColorBrush Color { get; private set; }
         Image[] Appearance { get; set; }
 
         Dictionary<string, BitmapImage> Sprites;
-        Grid Spot { get; set; }
+        Grid Spot { get; set; }// Все картинки персонажа прикреплены сюда
         Point Position { get; set; }
-        Canvas Scene { get; set; }
+        Canvas Scene { get; set; } // Сцена, на которой будет персонаж
 
+        public event Action<AnimationEventArgs> AnimationEvent;
         public void EnterTheScene()
         {
-            Scene.Children.Add(Spot);
+            if(!Scene.Children.Contains(Spot))
+                Scene.Children.Add(Spot);
         }
         public void LeaveTheScene()
         {
-            Scene.Children.Remove(Spot);
+            if (Scene.Children.Contains(Spot))
+                Scene.Children.Remove(Spot);
         }
         public bool SpriteInCollection(string name)
         {
@@ -52,32 +55,30 @@ namespace NovelCore
         {
             Sprites.Add(name, image);
         }
-        public void SetAppearance(BitmapImage emotionImage,
-            BitmapImage bodyLeftImage,
-            BitmapImage bodyRightImage)
-        {
-            Appearance[0].Source = emotionImage;
-            Appearance[1].Source = bodyLeftImage;
-            Appearance[2].Source = bodyRightImage;
-        }
-
         public void SetAppearance(string emotionName,
-            string bodyLeftName,
-            string bodyRightName)
+            string bodyLeftName = null,
+            string bodyRightName = null)
         {
             Appearance[0].Source = Sprites[emotionName];
-            Appearance[1].Source = Sprites[bodyLeftName];
-            Appearance[2].Source = Sprites[bodyRightName];
+
+            if (bodyLeftName != null)
+                Appearance[1].Source = Sprites[bodyLeftName];
+            else
+                Appearance[1].Source = new BitmapImage();
+            if (bodyLeftName != null)
+                Appearance[2].Source = Sprites[bodyLeftName];
+            else
+                Appearance[2].Source = new BitmapImage();
         }
 
-        public void SetPosition(Point point)
+        public void DoAnimation(ref AnimationEventArgs args)
         {
-            if(Position!= point)
+            if(Position!= args.point)
             {
-                Canvas.SetLeft(Scene, point.X);
-                Canvas.SetBottom(Scene, point.Y);
-                Position = point;
+                AnimationEvent?.Invoke(args);
+                Position = args.point;
             }
         }
     }
+
 }

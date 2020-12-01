@@ -1,1 +1,6 @@
-{"Name":"FirstEpisode","UsedBackgrounds":["Class1.png"],"UsedSprites":{"Monika":["Default.png"]},"Scenes":[{"Type":1,"Text":["\u042D\u0442\u043E \u043F\u0435\u0440\u0432\u044B\u0439 \u0444\u0440\u0435\u0439\u043C"],"ActorsConfig":{"Monika":{"Sprite":"Default.png"}},"BackgroundConfig":{"Background":"Class1.png"}}],"Lenght":1}
+{"n":"FirstEpisode","uB":["Class1.png"],"uS":{"Monika":["Default.png"]},"sS":[{"fT":1,"t":["\u042D\u0442\u043E \u043F\u0435\u0440\u0432\u044B\u0439 \u0444\u0440\u0435\u0439\u043C"],"aC":{"Monika":{"s":"Default.png"}},"bC":{"b":"Class1.png"}}]}   "aC": { "Monika": { "s": "Default.png" } },
+      "bC": { "b": "Class1.png" }
+    }
+  ],
+  "Lenght": 1
+}

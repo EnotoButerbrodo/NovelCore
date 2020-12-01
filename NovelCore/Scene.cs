@@ -18,9 +18,13 @@ namespace NovelCore
             Type = type; Text = text;
             ActorsConfig = actorConfig; BackgroundConfig = backConfig;
         }
+        [JsonPropertyName("fT")]
         public SceneType Type { get; set; }
+        [JsonPropertyName("t")]
         public string[] Text { get; set; }
+        [JsonPropertyName("aC")]
         public Dictionary<string, ActorArgs> ActorsConfig { get; set; }
+        [JsonPropertyName("bC")]
         public BackgroundArgs BackgroundConfig { get; set; }
 
     }
@@ -32,8 +36,12 @@ namespace NovelCore
         {
             Sprite = sprite;
         }
+
+        [JsonPropertyName("s")]
         public string Sprite { get; set; }
+        [JsonPropertyName("A3")]
         public AnimationEventArgs ActorAnimationArgs { get; set; }
+        [JsonPropertyName("aS")]
         public string AnimationScriptName { get; set; }
     }
 
@@ -45,8 +53,12 @@ namespace NovelCore
         {
             Background = name;
         }
+
+        [JsonPropertyName("b")]
         public string Background { get; set; }
+        [JsonPropertyName("BAA")]
         public AnimationEventArgs BackAnimationArgs { get; set; }
+        [JsonPropertyName("bSrp")]
         public string BackScriptName { get; set; }
     }
 

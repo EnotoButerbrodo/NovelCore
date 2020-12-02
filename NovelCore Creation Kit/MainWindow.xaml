@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Button Content="Сохранить эпизод" HorizontalAlignment="Left" Margin="26,76,0,0" VerticalAlignment="Top" Click="Button_Click"/>
+        <Button Content="Сохранить архив" HorizontalAlignment="Left" Margin="186,76,0,0" VerticalAlignment="Top" Click="SaveZip_click"/>
+        <Button Content="Добавить файл в архив" HorizontalAlignment="Left" Margin="327,76,0,0" VerticalAlignment="Top" Click="AddtoZip_click"/>
 
     </Grid>
 </Window>

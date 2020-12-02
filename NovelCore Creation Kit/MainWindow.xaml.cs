@@ -28,7 +28,6 @@ namespace NovelCore_Creation_Kit
         public MainWindow()
         {
             InitializeComponent();
-            TestSave();
         }
 
         void SaveEpisode(string path, Episode episode)
@@ -40,6 +39,25 @@ namespace NovelCore_Creation_Kit
                 {
                     writer.Write(ser_episode);
                 }
+            }
+        }
+
+        void CreateZip(string path, string name)
+        {
+            using(ZipFile zip = new ZipFile())
+            {
+                zip.Save($"{path}/{name}");
+            }
+        }
+        void AddToZip(string zipPath, string filePath)
+        {
+            using (ZipFile zip = new ZipFile(Encoding.UTF8))
+            {
+                //zip.AddDirectory(zipPath, "");
+                zip.AddFile(filePath, "Monika");
+                zip.AddFile(filePath, "Yuri");
+                zip.Save(zipPath);
+                MessageBox.Show(zip.Entries.Count.ToString());
             }
         }
 
@@ -63,6 +81,21 @@ namespace NovelCore_Creation_Kit
                 scenes.ToArray()
                 );
             SaveEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json", NewEpisode);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            TestSave();
+        }
+
+        private void SaveZip_click(object sender, RoutedEventArgs e)
+        {
+            CreateZip(@"S:\Users\Игорь\source\repos\NovelCore", "Hi2.zip");
+        }
+
+        private void AddtoZip_click(object sender, RoutedEventArgs e)
+        {
+            AddToZip(@"S:\Users\Игорь\source\repos\NovelCore\Hi22.zip", "АНИМЕ.jpg");
         }
     }
 }

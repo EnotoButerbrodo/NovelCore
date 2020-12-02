@@ -37,6 +37,7 @@ namespace NovelCore
                 return Scenes[number];
             }
         }
+        [JsonPropertyName("l")]
         public int Lenght => Scenes.Length;
 
     }

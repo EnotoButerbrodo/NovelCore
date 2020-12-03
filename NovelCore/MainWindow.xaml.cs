@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Ionic.Zip;
 
 namespace NovelCore
 {
@@ -52,6 +53,40 @@ namespace NovelCore
                 }
             }
         }
+
+        public MemoryStream ReadFromZip(string zipPath, string fileName)
+        {
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                foreach (ZipEntry zipEntry in zip)
+                {
+                    if (zipEntry.FileName.Contains(fileName))
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        zipEntry.Extract(stream);
+                        return stream;
+                    }
+                }
+            }
+            throw new Exception("Файл не найден");
+        }
+
+        public List<MemoryStream> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
+        {
+            List<MemoryStream> streams = new List<MemoryStream>();
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                foreach (var character in spriteNames)
+                {
+                    foreach (string sprite in character.Value)
+                    {
+                        streams.Add(new MemoryStream());
+                        zip[$"Characters\\{character.Key}\\{sprite}"].Extract(streams[streams.Count - 1]);
+                    }
+                }
+            }
+            return streams;
+        }
         void TestLoad()
         {
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
@@ -59,7 +94,18 @@ namespace NovelCore
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            TestLoad();
+            var streams = ReadFromZip(@"S:\Users\Игорь\source\repos\NovelCore\images.zip",
+                new Dictionary<string, string[]>
+                {
+                    ["Monika"] = new string[] { "Default.png" }
+                });
+
+            List<BitmapImage> images = new List<BitmapImage>();
+            foreach(var str in streams)
+            {
+                images.Add(str.toBitmapImage());
+            }
+            TestImage.Source = images[0];
         }
     }
 }

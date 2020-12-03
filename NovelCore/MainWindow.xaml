@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Canvas x:Name="MainScene">
-            <Image x:Name="TestImage" Grid.Row="0" Grid.Column="0" Stretch="Fill"/>
+            <Image x:Name="TestImage" Grid.Row="0" Grid.Column="0" Stretch="Uniform"/>
         </Canvas>
     </Grid>
 </Window>

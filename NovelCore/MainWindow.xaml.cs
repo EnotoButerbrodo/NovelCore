@@ -28,6 +28,8 @@ namespace NovelCore
             InitializeComponent();
         }
         Episode LoadedEpisode;
+        Dictionary<string, Actor> Actors = new Dictionary<string, Actor>();
+        Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
         void PlayScene()
         {
             //Запретить переключение сцены
@@ -54,6 +56,18 @@ namespace NovelCore
             }
         }
 
+        void SetupBackgrouds(string zipPath, string[] backgrouds)
+        {
+            foreach(string back in backgrouds)
+            {
+                if (!Backgrounds.ContainsKey(back))
+                {
+                    BitmapImage image = ReadFromZip(zipPath, back).toBitmapImage();
+                    Backgrounds.Add(back, image);
+                }
+                else continue;
+            }
+        }
         public MemoryStream ReadFromZip(string zipPath, string fileName)
         {
             using (ZipFile zip = ZipFile.Read(zipPath))
@@ -71,21 +85,24 @@ namespace NovelCore
             throw new Exception("Файл не найден");
         }
 
-        public List<MemoryStream> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
+        public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
         {
-            List<MemoryStream> streams = new List<MemoryStream>();
+            Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
+            
             using (ZipFile zip = ZipFile.Read(zipPath))
             {
                 foreach (var character in spriteNames)
                 {
+                    buff.Add(character.Key, new List<MemoryStream>());
                     foreach (string sprite in character.Value)
                     {
-                        streams.Add(new MemoryStream());
-                        zip[$"Characters\\{character.Key}\\{sprite}"].Extract(streams[streams.Count - 1]);
+                        MemoryStream stream = new MemoryStream();
+                        zip[$"Characters\\{character.Key}\\{sprite}"].Extract(stream);
+                        buff[character.Key].Add(stream);
                     }
                 }
             }
-            return streams;
+            return buff;
         }
         void TestLoad()
         {
@@ -94,18 +111,15 @@ namespace NovelCore
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var streams = ReadFromZip(@"S:\Users\Игорь\source\repos\NovelCore\images.zip",
-                new Dictionary<string, string[]>
-                {
-                    ["Monika"] = new string[] { "Default.png" }
-                });
-
-            List<BitmapImage> images = new List<BitmapImage>();
-            foreach(var str in streams)
+            Dictionary<string, string[]> test = new Dictionary<string, string[]>
             {
-                images.Add(str.toBitmapImage());
-            }
-            TestImage.Source = images[0];
+                ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
+                ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
+            };
+            var streams = ReadFromZip(@"S:\Users\Игорь\source\repos\NovelCore\images.zip",
+                test);
         }
+
+        
     }
 }

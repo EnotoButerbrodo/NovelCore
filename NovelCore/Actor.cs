@@ -13,7 +13,7 @@ namespace NovelCore
 {
     public class Actor
     {
-        public Actor(string name, Canvas scene)
+        public Actor(string name)
         {
             Name = name;
             Appearance = new Image[3];
@@ -25,7 +25,6 @@ namespace NovelCore
                 Spot.Children.Add(Appearance[i]);
             }
             Sprites = new Dictionary<string, BitmapImage>();
-            Scene = scene;
             
         }
         public string Name { get; set; }

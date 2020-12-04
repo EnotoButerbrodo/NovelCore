@@ -27,6 +27,7 @@ namespace NovelCore
         {
             InitializeComponent();
         }
+        const string ResoursesPath = "../../../../Resourses/";
         Episode LoadedEpisode;
         Dictionary<string, Actor> Actors = new Dictionary<string, Actor>();
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
@@ -68,42 +69,31 @@ namespace NovelCore
                 else continue;
             }
         }
-        public MemoryStream ReadFromZip(string zipPath, string fileName)
+        void SetupCharacters(string zipPath, Dictionary<string, string[]> sprites)
         {
-            using (ZipFile zip = ZipFile.Read(zipPath))
+            //Пройтись по всем ключам словаря. Каждый ключ - какой то герой
+            //Если в словаре существующих героев нет такого, создаем нового
+            //Пройтись по всем спрайтам прочитанного списка. Если персонаж не имеет
+            //...нужных спрайтов - загрузить их и добавить в коллекцию герою
+            foreach(var actor in sprites)
             {
-                foreach (ZipEntry zipEntry in zip)
+                if (!Actors.ContainsKey(actor.Key))
                 {
-                    if (zipEntry.FileName.Contains(fileName))
-                    {
-                        MemoryStream stream = new MemoryStream();
-                        zipEntry.Extract(stream);
-                        return stream;
-                    }
+                    Actors.Add(actor.Key, new Actor(actor.Key));
                 }
+                foreach(var sprite in actor.Value)
+                {
+                    if (!Actors[actor.Key].SpriteInCollection(sprite))
+                    {
+                        BitmapImage image = ReadFromZip(zipPath,
+                            $"{actor.Key}\\{sprite}").toBitmapImage();
+                        Actors[actor.Key].AddSprite(sprite, image);
+                    }
+                }            
             }
-            throw new Exception("Файл не найден");
         }
 
-        public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
-        {
-            Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
-            
-            using (ZipFile zip = ZipFile.Read(zipPath))
-            {
-                foreach (var character in spriteNames)
-                {
-                    buff.Add(character.Key, new List<MemoryStream>());
-                    foreach (string sprite in character.Value)
-                    {
-                        MemoryStream stream = new MemoryStream();
-                        zip[$"Characters\\{character.Key}\\{sprite}"].Extract(stream);
-                        buff[character.Key].Add(stream);
-                    }
-                }
-            }
-            return buff;
-        }
+        
         void TestLoad()
         {
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
@@ -116,10 +106,40 @@ namespace NovelCore
                 ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
                 ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
             };
-            var streams = ReadFromZip(@"S:\Users\Игорь\source\repos\NovelCore\images.zip",
+            var streams = ReadFromZip(ResoursesPath+"Characters.zip",
                 test);
+            SetupCharacters(ResoursesPath + "Characters.zip", test);
+        }
+        public MemoryStream ReadFromZip(string zipPath, string fileName)
+        {
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                MemoryStream stream = new MemoryStream();
+                zip[fileName].Extract(stream);
+                return stream;
+            }
+            throw new Exception("Файл не найден");
         }
 
-        
+        public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
+        {
+            Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
+
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                foreach (var character in spriteNames)
+                {
+                    buff.Add(character.Key, new List<MemoryStream>());
+                    foreach (string sprite in character.Value)
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        zip[$"{character.Key}\\{sprite}"].Extract(stream);
+                        buff[character.Key].Add(stream);
+                    }
+                }
+            }
+            return buff;
+        }
+
     }
 }

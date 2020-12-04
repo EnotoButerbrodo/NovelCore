@@ -12,7 +12,7 @@ namespace NovelCore
     public class Scene
     {
         public Scene() : base() { }
-        public Scene(SceneType type, string[] text, Dictionary<string, ActorArgs> actorConfig,
+        public Scene(SceneType type, string[] text, Dictionary<string, CharacterArgs> actorConfig,
             BackgroundArgs backConfig)
         {
             Type = type; Text = text;
@@ -22,23 +22,23 @@ namespace NovelCore
         public SceneType Type { get; set; }
         [JsonPropertyName("t")]
         public string[] Text { get; set; }
-        [JsonPropertyName("aC")]
-        public Dictionary<string, ActorArgs> ActorsConfig { get; set; }
+        [JsonPropertyName("cC")]
+        public Dictionary<string, CharacterArgs> ActorsConfig { get; set; }
         [JsonPropertyName("bC")]
         public BackgroundArgs BackgroundConfig { get; set; }
 
     }
     [Serializable]
-    public class ActorArgs
+    public class CharacterArgs
     {
-        public ActorArgs() : base() { }
-        public ActorArgs(string sprite, AnimationEventArgs args = null)
+        public CharacterArgs() : base() { }
+        public CharacterArgs(string[] sprite, AnimationEventArgs args = null)
         {
             Sprite = sprite;
         }
 
         [JsonPropertyName("s")]
-        public string Sprite { get; set; }
+        public string[] Sprite { get; set; }
         [JsonPropertyName("A3")]
         public AnimationEventArgs ActorAnimationArgs { get; set; }
         [JsonPropertyName("aS")]

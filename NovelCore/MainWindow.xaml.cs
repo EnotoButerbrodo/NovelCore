@@ -28,8 +28,10 @@ namespace NovelCore
             InitializeComponent();
         }
         const string ResoursesPath = "../../../../Resourses/";
+        const string CharactersZipPath = ResoursesPath + "Characters.zip";
+        const string BackgroudsZipPath = ResoursesPath + "Backgrounds.zip";
         Episode LoadedEpisode;
-        Dictionary<string, Actor> Actors = new Dictionary<string, Actor>();
+        Dictionary<string, Character> Characters = new Dictionary<string, Character>();
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
         void PlayScene()
         {
@@ -57,7 +59,7 @@ namespace NovelCore
             }
         }
 
-        void SetupBackgrouds(string zipPath, string[] backgrouds)
+        void LoadBackgrouds(string zipPath, string[] backgrouds)
         {
             foreach(string back in backgrouds)
             {
@@ -69,30 +71,41 @@ namespace NovelCore
                 else continue;
             }
         }
-        void SetupCharacters(string zipPath, Dictionary<string, string[]> sprites)
+        void LoadCharacters(string zipPath, Dictionary<string, string[]> sprites)
         {
             //Пройтись по всем ключам словаря. Каждый ключ - какой то герой
             //Если в словаре существующих героев нет такого, создаем нового
             //Пройтись по всем спрайтам прочитанного списка. Если персонаж не имеет
             //...нужных спрайтов - загрузить их и добавить в коллекцию герою
-            foreach(var actor in sprites)
+            foreach(var character in sprites)
             {
-                if (!Actors.ContainsKey(actor.Key))
+                if (!Characters.ContainsKey(character.Key))
                 {
-                    Actors.Add(actor.Key, new Actor(actor.Key));
+                    Characters.Add(character.Key, new Character(character.Key));
+                    Characters[character.Key].EnterTheScene(MainScene);
                 }
-                foreach(var sprite in actor.Value)
+                foreach(var sprite in character.Value)
                 {
-                    if (!Actors[actor.Key].SpriteInCollection(sprite))
+                    if (!Characters[character.Key].SpriteInCollection(sprite))
                     {
                         BitmapImage image = ReadFromZip(zipPath,
-                            $"{actor.Key}\\{sprite}").toBitmapImage();
-                        Actors[actor.Key].AddSprite(sprite, image);
+                            $"{character.Key}\\{sprite}").toBitmapImage();
+                        Characters[character.Key].AddSprite(sprite, image);
                     }
                 }            
             }
         }
-
+        void SetupBackgroud(BackgroundArgs args)
+        {
+            BackgroudImage.Source = Backgrounds[args.Background];
+        }
+        void SetupCharacterAppearance(Dictionary<string, CharacterArgs> args) 
+        {
+            foreach(var character in args)
+            {
+                Characters[character.Key].SetAppearance(character.Value.Sprite);
+            }
+        }
         
         void TestLoad()
         {
@@ -106,10 +119,14 @@ namespace NovelCore
                 ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
                 ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
             };
-            var streams = ReadFromZip(ResoursesPath+"Characters.zip",
-                test);
-            SetupCharacters(ResoursesPath + "Characters.zip", test);
+            LoadCharacters(CharactersZipPath, test);
+            LoadBackgrouds(BackgroudsZipPath, new string[] { "Class1.png" });
+            SetupCharacterAppearance(new Dictionary<string, CharacterArgs>
+            {
+                ["Monika"] = new CharacterArgs(new string[] { "Default.png",null, null })
+            });
         }
+
         public MemoryStream ReadFromZip(string zipPath, string fileName)
         {
             using (ZipFile zip = ZipFile.Read(zipPath))
@@ -121,25 +138,25 @@ namespace NovelCore
             throw new Exception("Файл не найден");
         }
 
-        public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
-        {
-            Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
+        //public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
+        //{
+        //    Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
 
-            using (ZipFile zip = ZipFile.Read(zipPath))
-            {
-                foreach (var character in spriteNames)
-                {
-                    buff.Add(character.Key, new List<MemoryStream>());
-                    foreach (string sprite in character.Value)
-                    {
-                        MemoryStream stream = new MemoryStream();
-                        zip[$"{character.Key}\\{sprite}"].Extract(stream);
-                        buff[character.Key].Add(stream);
-                    }
-                }
-            }
-            return buff;
-        }
+        //    using (ZipFile zip = ZipFile.Read(zipPath))
+        //    {
+        //        foreach (var character in spriteNames)
+        //        {
+        //            buff.Add(character.Key, new List<MemoryStream>());
+        //            foreach (string sprite in character.Value)
+        //            {
+        //                MemoryStream stream = new MemoryStream();
+        //                zip[$"{character.Key}\\{sprite}"].Extract(stream);
+        //                buff[character.Key].Add(stream);
+        //            }
+        //        }
+        //    }
+        //    return buff;
+        //}
 
     }
 }

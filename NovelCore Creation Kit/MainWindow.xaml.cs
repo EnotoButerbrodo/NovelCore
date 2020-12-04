@@ -69,7 +69,7 @@ namespace NovelCore_Creation_Kit
             scenes.Add(new Scene(
                 SceneType.Text,
                 new string[] { "Это первый фрейм" },
-                new Dictionary<string, ActorArgs>() { ["Monika"] = new ActorArgs("Default.png")},
+                new Dictionary<string, CharacterArgs>() { ["Monika"] = new CharacterArgs("Default.png")},
                 new BackgroundArgs("Class1.png")
                 )
             );

@@ -11,9 +11,9 @@ using Image = System.Windows.Controls.Image;
 
 namespace NovelCore
 {
-    public class Actor
+    public class Character
     {
-        public Actor(string name)
+        public Character(string name)
         {
             Name = name;
             Appearance = new Image[3];
@@ -21,7 +21,7 @@ namespace NovelCore
             for(byte i = 0;i < 3; i++)
             {
                 Appearance[i] = new Image();
-                Appearance[i].Stretch = Stretch.Fill;
+                Appearance[i].Stretch = Stretch.Uniform;
                 Spot.Children.Add(Appearance[i]);
             }
             Sprites = new Dictionary<string, BitmapImage>();
@@ -36,10 +36,17 @@ namespace NovelCore
         Canvas Scene { get; set; } // Сцена, на которой будет персонаж
 
         public event Action<AnimationEventArgs> Animation;
-        public void EnterTheScene()
+        public void EnterTheScene(Canvas scene)
         {
-            if(!Scene.Children.Contains(Spot))
+            Scene = scene;
+            if (!Scene.Children.Contains(Spot))
+            {
+                Spot.Width = scene.ActualWidth;
+                Spot.Height = scene.ActualHeight;
+
                 Scene.Children.Add(Spot);
+
+            }
         }
         public void LeaveTheScene()
         {
@@ -58,18 +65,16 @@ namespace NovelCore
         {
             Sprites.Remove(name);
         }
-        public void SetAppearance(string emotionName,
-            string bodyLeftName = null,
-            string bodyRightName = null)
+        public void SetAppearance(string[] sprite)
         {
-            Appearance[0].Source = Sprites[emotionName];
+            Appearance[0].Source = Sprites[sprite[0]];
 
-            if (bodyLeftName != null)
-                Appearance[1].Source = Sprites[bodyLeftName];
+            if (sprite[1] != null)
+                Appearance[1].Source = Sprites[sprite[1]];
             else
                 Appearance[1].Source = new BitmapImage();
-            if (bodyLeftName != null)
-                Appearance[2].Source = Sprites[bodyLeftName];
+            if (sprite[2] != null)
+                Appearance[2].Source = Sprites[sprite[2]];
             else
                 Appearance[2].Source = new BitmapImage();
         }

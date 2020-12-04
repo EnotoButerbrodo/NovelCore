@@ -7,8 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
+        <Image x:Name="BackgroudImage" Grid.Row="0" Grid.Column="0" Stretch="Uniform" Panel.ZIndex="0"/>
         <Canvas x:Name="MainScene">
-            <Image x:Name="TestImage" Grid.Row="0" Grid.Column="0" Stretch="Uniform"/>
+            
         </Canvas>
     </Grid>
 </Window>

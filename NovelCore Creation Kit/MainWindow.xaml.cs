@@ -66,21 +66,36 @@ namespace NovelCore_Creation_Kit
             //Создать сцену
             //СОздать эпизод и сохранить его
             List<Scene> scenes = new List<Scene>();
-            scenes.Add(new Scene(
-                SceneType.Text,
-                new string[] { "Это первый фрейм" },
-                new Dictionary<string, CharacterArgs>() { ["Monika"] = new CharacterArgs("Default.png")},
-                new BackgroundArgs("Class1.png")
-                )
-            );
+            SceneType st = SceneType.Text;
+            string[] text = new string[] { "Приветик." };
+            AnimationSettings settings = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+                new DoublePoint(100.0, 0.0, 0.0), AnimationTiming.AtBegin, 3000);
+            AnimationSettings settings2 = new AnimationSettings(new DoublePoint(100.0, 0.0, 0.0),
+                new DoublePoint(-100.0, 0.0, 0.0), AnimationTiming.AtBegin, 3000);
+            var chars = new Dictionary<string, CharacterArgs>
+            {
+                ["Monika"] = new CharacterArgs(new string[] { "Default.png", null, null },
+                settings),
+                ["lilly"] = new CharacterArgs(new string[] { "lilly_basic_concerned_cas.png", null, null },
+                settings2)
+            };
+            var backConfig = new BackgroundArgs("Class1.png");
+            scenes.Add(new Scene(st, text, chars, backConfig));
 
-            Episode NewEpisode = new Episode(
-                "FirstEpisode",
-                new string[] { "Class1.png" },
-                new Dictionary<string, string[]> { ["Monika"] = new string[] { "Default.png" } },
-                scenes.ToArray()
-                );
-            SaveEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json", NewEpisode);
+            string episode_name = "First Episode";
+            Dictionary<string, string[]> usedSprites = new Dictionary<string, string[]>
+            {
+                ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
+                ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
+            };
+            var usedBackgrounds = new string[] { "Class1.png", "Class2.png" };
+
+            var episodeToSave = new Episode(episode_name, usedBackgrounds,
+                usedSprites, scenes.ToArray());
+
+
+
+            SaveEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json", episodeToSave);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

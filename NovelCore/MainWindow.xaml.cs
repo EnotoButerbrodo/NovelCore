@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,9 +12,11 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Ionic.Zip;
 
 namespace NovelCore
@@ -99,12 +102,37 @@ namespace NovelCore
         {
             BackgroudImage.Source = Backgrounds[args.Background];
         }
-        void SetupCharacterAppearance(Dictionary<string, CharacterArgs> args) 
+        void SetupCharactersAppearance(Dictionary<string, CharacterArgs> args) 
         {
             foreach(var character in args)
             {
                 Characters[character.Key].SetAppearance(character.Value.Sprite);
             }
+        }
+        void SetupCharactersAnimation(Dictionary<string, CharacterArgs> args)
+        {
+            foreach (var character in args)
+            {
+                BeginCharacterAnimation(Characters[character.Key],
+                    character.Value.AnimationConfig);
+            }
+        }
+        void BeginCharacterAnimation(Character character, AnimationSettings args)
+        {
+            if (args.StartPoint.X != args.EndPoint.X)
+            {
+                DoubleAnimation anim_X = new DoubleAnimation(args.StartPoint.X,
+                    args.EndPoint.X, new TimeSpan(0, 0, 0, 0, args.Speed));
+                character.Spot.BeginAnimation(Canvas.LeftProperty, anim_X);
+            }
+            if (args.StartPoint.Y != args.EndPoint.Y)
+            {
+                DoubleAnimation anim_Y = new DoubleAnimation(args.StartPoint.Y,
+                args.EndPoint.Y, new TimeSpan(0, 0, 0, 0, args.Speed));
+                //anim_Y.IsAdditive = true;
+                character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
+            }
+
         }
         
         void TestLoad()
@@ -112,20 +140,17 @@ namespace NovelCore
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Dictionary<string, string[]> test = new Dictionary<string, string[]>
-            {
-                ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
-                ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
-            };
-            LoadCharacters(CharactersZipPath, test);
-            LoadBackgrouds(BackgroudsZipPath, new string[] { "Class1.png" });
-            SetupCharacterAppearance(new Dictionary<string, CharacterArgs>
-            {
-                ["Monika"] = new CharacterArgs(new string[] { "Default.png",null, null })
-            });
+            var loadEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
+            LoadCharacters(CharactersZipPath, loadEpisode.UsedSprites);
+            LoadBackgrouds(BackgroudsZipPath, loadEpisode.UsedBackgrounds);
+
+            SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
+            SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
+
         }
+
 
         public MemoryStream ReadFromZip(string zipPath, string fileName)
         {

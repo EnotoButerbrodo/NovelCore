@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using Image = System.Windows.Controls.Image;
+using System.Windows.Threading;
 
 
 
@@ -18,24 +19,23 @@ namespace NovelCore
             Name = name;
             Appearance = new Image[3];
             Spot = new Grid();
-            for(byte i = 0;i < 3; i++)
+            for (byte i = 0; i < 3; i++)
             {
                 Appearance[i] = new Image();
                 Appearance[i].Stretch = Stretch.Uniform;
                 Spot.Children.Add(Appearance[i]);
             }
             Sprites = new Dictionary<string, BitmapImage>();
-            
+
         }
         public string Name { get; set; }
         Image[] Appearance { get; set; }
 
         Dictionary<string, BitmapImage> Sprites;
-        Grid Spot { get; set; }// Все картинки персонажа прикреплены сюда
-        Point Position { get; set; }
+        public Grid Spot { get;private set; }// Все картинки персонажа прикреплены сюда
+        public Point Position { get; set; }
         Canvas Scene { get; set; } // Сцена, на которой будет персонаж
-
-        public event Action<AnimationEventArgs> Animation;
+        
         public void EnterTheScene(Canvas scene)
         {
             Scene = scene;
@@ -45,13 +45,13 @@ namespace NovelCore
                 Spot.Height = scene.ActualHeight;
 
                 Scene.Children.Add(Spot);
-
             }
         }
-        public void LeaveTheScene()
+        public void LeaveTheScene(Canvas scene)
         {
-            if (Scene.Children.Contains(Spot))
-                Scene.Children.Remove(Spot);
+            if (scene.Children.Contains(Spot))
+                scene.Children.Remove(Spot);
+            Scene = null;
         }
         public bool SpriteInCollection(string name)
         {
@@ -79,14 +79,6 @@ namespace NovelCore
                 Appearance[2].Source = new BitmapImage();
         }
 
-        public void DoAnimation(ref AnimationEventArgs args)
-        {
-            if(Position!= args.point)
-            {
-                Animation?.Invoke(args);
-                Position = args.point;
-            }
-        }
     }
 
 }

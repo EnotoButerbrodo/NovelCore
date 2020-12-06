@@ -12,18 +12,18 @@ namespace NovelCore
     public class Scene
     {
         public Scene() : base() { }
-        public Scene(SceneType type, string[] text, Dictionary<string, CharacterArgs> actorConfig,
+        public Scene(SceneType type, string[] text, Dictionary<string, CharacterArgs> characterConfig,
             BackgroundArgs backConfig)
         {
             Type = type; Text = text;
-            ActorsConfig = actorConfig; BackgroundConfig = backConfig;
+            CharactersConfig = characterConfig; BackgroundConfig = backConfig;
         }
         [JsonPropertyName("fT")]
         public SceneType Type { get; set; }
         [JsonPropertyName("t")]
         public string[] Text { get; set; }
         [JsonPropertyName("cC")]
-        public Dictionary<string, CharacterArgs> ActorsConfig { get; set; }
+        public Dictionary<string, CharacterArgs> CharactersConfig { get; set; }
         [JsonPropertyName("bC")]
         public BackgroundArgs BackgroundConfig { get; set; }
 
@@ -32,15 +32,16 @@ namespace NovelCore
     public class CharacterArgs
     {
         public CharacterArgs() : base() { }
-        public CharacterArgs(string[] sprite, AnimationEventArgs args = null)
+        public CharacterArgs(string[] sprite, AnimationSettings animationConfig)
         {
             Sprite = sprite;
+            AnimationConfig = animationConfig;
         }
 
         [JsonPropertyName("s")]
         public string[] Sprite { get; set; }
-        [JsonPropertyName("A3")]
-        public AnimationEventArgs ActorAnimationArgs { get; set; }
+        [JsonPropertyName("anC")]
+        public AnimationSettings AnimationConfig { get; set; }
         [JsonPropertyName("aS")]
         public string AnimationScriptName { get; set; }
     }
@@ -49,17 +50,18 @@ namespace NovelCore
     public class BackgroundArgs
     {
         public BackgroundArgs() : base() { }
-        public BackgroundArgs(string name)
+        public BackgroundArgs(string name, AnimationSettings animationConfig = null)
         {
             Background = name;
+            AnimationConfig = animationConfig;
         }
 
         [JsonPropertyName("b")]
         public string Background { get; set; }
         [JsonPropertyName("BAA")]
-        public AnimationEventArgs BackAnimationArgs { get; set; }
+        public AnimationSettings AnimationConfig { get; set; }
         [JsonPropertyName("bSrp")]
-        public string BackScriptName { get; set; }
+        public string AnimationScriptName { get; set; }
     }
 
     public enum SceneType

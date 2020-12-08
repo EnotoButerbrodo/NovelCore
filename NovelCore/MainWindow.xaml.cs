@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using Ionic.Zip;
+using NAudio.Wave;
+using Microsoft.Xna.Framework.Audio;
 
 namespace NovelCore
 {
@@ -33,9 +26,14 @@ namespace NovelCore
         const string ResoursesPath = "../../../../Resourses/";
         const string CharactersZipPath = ResoursesPath + "Characters.zip";
         const string BackgroudsZipPath = ResoursesPath + "Backgrounds.zip";
+        const string AudioZipPath = ResoursesPath + "Audio.zip";
         Episode LoadedEpisode;
         Dictionary<string, Character> Characters = new Dictionary<string, Character>();
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
+        Dictionary<string, MemoryStream[]> Audio = new Dictionary<string, MemoryStream[]>();
+
+        MediaPlayer Player = new MediaPlayer();
+        
         void PlayScene()
         {
             //Запретить переключение сцены
@@ -119,17 +117,15 @@ namespace NovelCore
         }
         void BeginCharacterAnimation(Character character, AnimationSettings args)
         {
+
             if (args.StartPoint.X != args.EndPoint.X)
             {
-                DoubleAnimation anim_X = new DoubleAnimation(args.StartPoint.X,
-                    args.EndPoint.X, new TimeSpan(0, 0, 0, 0, args.Speed));
+                DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, new TimeSpan(0, 0, 0, 0, args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_X);
             }
             if (args.StartPoint.Y != args.EndPoint.Y)
             {
-                DoubleAnimation anim_Y = new DoubleAnimation(args.StartPoint.Y,
-                args.EndPoint.Y, new TimeSpan(0, 0, 0, 0, args.Speed));
-                //anim_Y.IsAdditive = true;
+                DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, new TimeSpan(0, 0, 0, 0, args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
             }
 
@@ -147,8 +143,20 @@ namespace NovelCore
             LoadBackgrouds(BackgroudsZipPath, loadEpisode.UsedBackgrounds);
 
             SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
+            await Task.Delay(1000);
             SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
+            var Audio = ReadFromZip(AudioZipPath, "TestSound.wav");
+            //Player.Open(new Uri(@"S:\Users\Игорь\source\repos\NovelCore\Resourses\TestSound.wav"));
+            //Player.Play();
+            Audio.Position = 0;
+            var stream = new WaveFileReader(Audio);
+            var waveOut = new WaveOutEvent();
+            waveOut.Init(stream);
+            waveOut.Play();
+
+            
+            
         }
 
 
@@ -162,26 +170,6 @@ namespace NovelCore
             }
             throw new Exception("Файл не найден");
         }
-
-        //public Dictionary<string, List<MemoryStream>> ReadFromZip(string zipPath, Dictionary<string, string[]> spriteNames)
-        //{
-        //    Dictionary<string, List<MemoryStream>> buff = new Dictionary<string, List<MemoryStream>>();
-
-        //    using (ZipFile zip = ZipFile.Read(zipPath))
-        //    {
-        //        foreach (var character in spriteNames)
-        //        {
-        //            buff.Add(character.Key, new List<MemoryStream>());
-        //            foreach (string sprite in character.Value)
-        //            {
-        //                MemoryStream stream = new MemoryStream();
-        //                zip[$"{character.Key}\\{sprite}"].Extract(stream);
-        //                buff[character.Key].Add(stream);
-        //            }
-        //        }
-        //    }
-        //    return buff;
-        //}
 
     }
 }

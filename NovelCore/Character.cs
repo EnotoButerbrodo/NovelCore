@@ -19,6 +19,7 @@ namespace NovelCore
             Name = name;
             Appearance = new Image[3];
             Spot = new Grid();
+            Canvas.SetLeft(Spot, 0);
             for (byte i = 0; i < 3; i++)
             {
                 Appearance[i] = new Image();

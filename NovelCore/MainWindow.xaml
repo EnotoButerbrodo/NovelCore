@@ -9,7 +9,6 @@
     <Grid>
         <Image x:Name="BackgroudImage" Grid.Row="0" Grid.Column="0" Stretch="Uniform" Panel.ZIndex="0"/>
         <Canvas x:Name="MainScene">
-            
         </Canvas>
     </Grid>
 </Window>

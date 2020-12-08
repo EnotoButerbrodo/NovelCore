@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
 
 </Project>

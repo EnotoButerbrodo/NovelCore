@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NovelCore
@@ -20,9 +21,13 @@ namespace NovelCore
             Speed = speed;
             ScriptName = scriptName;
         }
+        [JsonPropertyName("sP")]
         public DoublePoint StartPoint { get; set; }
+        [JsonPropertyName("eP")]
         public DoublePoint EndPoint { get; set; }
+        [JsonPropertyName("ti")]
         public AnimationTiming Timing { get; set; }
+        [JsonPropertyName("sp")]
         public int Speed { get; set; }
         public string ScriptName { get; set; }
     }

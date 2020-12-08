@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Media;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,7 +11,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Ionic.Zip;
 using NAudio.Wave;
-using Microsoft.Xna.Framework.Audio;
+using Plugin.SimpleAudioPlayer;
 
 namespace NovelCore
 {
@@ -32,8 +33,7 @@ namespace NovelCore
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
         Dictionary<string, MemoryStream[]> Audio = new Dictionary<string, MemoryStream[]>();
 
-        MediaPlayer Player = new MediaPlayer();
-        
+        SoundPlayer sp = new SoundPlayer();
         void PlayScene()
         {
             //Запретить переключение сцены
@@ -147,16 +147,14 @@ namespace NovelCore
             SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
             var Audio = ReadFromZip(AudioZipPath, "TestSound.wav");
-            //Player.Open(new Uri(@"S:\Users\Игорь\source\repos\NovelCore\Resourses\TestSound.wav"));
-            //Player.Play();
             Audio.Position = 0;
-            var stream = new WaveFileReader(Audio);
-            var waveOut = new WaveOutEvent();
-            waveOut.Init(stream);
+            WaveFileReader reader = new WaveFileReader(Audio);
+            LoopStream wavSong = new LoopStream(reader);
+            var waveOut = new WaveOut();
+            waveOut.Init(wavSong);
             waveOut.Play();
 
-            
-            
+
         }
 
 

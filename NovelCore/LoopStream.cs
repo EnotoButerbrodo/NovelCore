@@ -59,7 +59,7 @@ namespace NovelCore
             while (totalBytesRead < count)
             {
                 int bytesRead = sourceStream.Read(buffer, offset + totalBytesRead, count - totalBytesRead);
-                if (bytesRead == 0)
+                if (bytesRead == 0 || sourceStream.Position > sourceStream.Length)
                 {
                     if (sourceStream.Position == 0 || !EnableLooping)
                     {

@@ -31,9 +31,11 @@ namespace NovelCore
         Episode LoadedEpisode;
         Dictionary<string, Character> Characters = new Dictionary<string, Character>();
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
-        Dictionary<string, MemoryStream[]> Audio = new Dictionary<string, MemoryStream[]>();
-
-        SoundPlayer sp = new SoundPlayer();
+        Dictionary<string, MemoryStream> Audio = new Dictionary<string, MemoryStream>();
+        Dictionary<string, WaveOut> AudioPlayers = new Dictionary<string, WaveOut>();
+        //WaveFileReader reader;
+        //LoopStream wavSong;
+        //WaveOut AudioPlayer;
         void PlayScene()
         {
             //Запретить переключение сцены
@@ -130,10 +132,43 @@ namespace NovelCore
             }
 
         }
-        
-        void TestLoad()
+        void LoadAudio(string zipPath, string[] audios)
         {
-            LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
+            foreach(var audio in audios)
+            {
+                if (!Audio.ContainsKey(audio))
+                {
+                    var buff = ReadFromZip(zipPath, audio);
+                    buff.Position = 0;
+                    Audio.Add(audio, buff);
+                }
+                else continue;
+            }
+        }
+        void StartPlayAudio(string name, bool loop)
+        {
+            if(!AudioPlayers.ContainsKey(name))
+                AudioPlayers.Add(name, new WaveOut());
+            WaveFileReader reader = new WaveFileReader(Audio[name]);
+            LoopStream wavSong = new LoopStream(reader);
+            wavSong.EnableLooping = loop;
+            AudioPlayers[name] = new WaveOut();
+            AudioPlayers[name].Init(wavSong);
+            AudioPlayers[name].Play();  
+        }
+        void PlayAudio(string name)
+        {
+            AudioPlayers[name].Play();
+        }
+        void PauseAudio(string name)
+        {
+            AudioPlayers[name].Pause();
+        }
+        void StopAudio(string name)
+        {
+            AudioPlayers[name].Stop();
+            AudioPlayers[name].Dispose();
+            AudioPlayers.Remove(name);
         }
 
         async private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -146,13 +181,13 @@ namespace NovelCore
             await Task.Delay(1000);
             SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
-            var Audio = ReadFromZip(AudioZipPath, "TestSound.wav");
-            Audio.Position = 0;
-            WaveFileReader reader = new WaveFileReader(Audio);
-            LoopStream wavSong = new LoopStream(reader);
-            var waveOut = new WaveOut();
-            waveOut.Init(wavSong);
-            waveOut.Play();
+            LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav"});
+            StartPlayAudio("TestSound.wav", true);
+            StartPlayAudio("SilverfishDeath1.wav", true);
+            await Task.Delay(1000);
+            PauseAudio("SilverfishDeath1.wav");
+            await Task.Delay(3000);
+            PlayAudio("SilverfishDeath1.wav");
 
 
         }

@@ -12,7 +12,7 @@ namespace NovelCore
     public class Scene
     {
         public Scene() : base() { }
-        public Scene(SceneType type, string[] text, Dictionary<string, CharacterArgs> characterConfig,
+        public Scene(SceneType type, string[] text, CharacterArgs[] characterConfig,
             BackgroundArgs backConfig)
         {
             Type = type; Text = text;
@@ -23,21 +23,25 @@ namespace NovelCore
         [JsonPropertyName("t")]
         public string[] Text { get; set; }
         [JsonPropertyName("cC")]
-        public Dictionary<string, CharacterArgs> CharactersConfig { get; set; }
+        public CharacterArgs[] CharactersConfig { get; set; }
         [JsonPropertyName("bC")]
         public BackgroundArgs BackgroundConfig { get; set; }
+        [JsonPropertyName("aC")]
+        public AudioArgs[] AudioConfig { get; set; }
 
     }
     [Serializable]
     public class CharacterArgs
     {
         public CharacterArgs() : base() { }
-        public CharacterArgs(string[] sprite, AnimationSettings animationConfig)
+        public CharacterArgs(string character, string[] sprite, AnimationSettings animationConfig)
         {
+            Character = character;
             Sprite = sprite;
             AnimationConfig = animationConfig;
         }
-
+        [JsonPropertyName("c")]
+        public string Character { get; set; }
         [JsonPropertyName("s")]
         public string[] Sprite { get; set; }
         [JsonPropertyName("anC")]
@@ -62,6 +66,21 @@ namespace NovelCore
         public AnimationSettings AnimationConfig { get; set; }
         [JsonPropertyName("bSrp")]
         public string AnimationScriptName { get; set; }
+    }
+    
+    [Serializable]
+    public class AudioArgs
+    {
+        public AudioArgs() : base () { }
+        public AudioArgs(string audio, bool loop)
+        {
+            Audio = audio;
+            Loop = loop;
+        }
+        [JsonPropertyName("a")]
+        public string Audio { get; set; }
+        [JsonPropertyName("lo")]
+        public bool Loop { get; set; }
     }
 
     public enum SceneType

@@ -66,27 +66,56 @@ namespace NovelCore_Creation_Kit
             //Создать сцену
             //СОздать эпизод и сохранить его
             List<Scene> scenes = new List<Scene>();
+            //Scene 1
             SceneType st = SceneType.Text;
             string[] text = new string[] { "Приветик." };
             AnimationSettings settings = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
-                new DoublePoint(100.0, 0.0, 0.0), AnimationTiming.AtBegin, 3000);
-            AnimationSettings settings2 = new AnimationSettings(new DoublePoint(100.0, 0.0, 0.0),
-                new DoublePoint(-100.0, 0.0, 0.0), AnimationTiming.AtBegin, 3000);
-            var chars = new Dictionary<string, CharacterArgs>
+                new DoublePoint(-300.0, 0.0, 0.0), AnimationTiming.AtBegin, 1000);
+            AnimationSettings settings2 = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+                new DoublePoint(300.0, 0.0, 0.0), AnimationTiming.AtBegin, 2000);
+            var settings3 = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+               new DoublePoint(600.0, 0.0, 0.0), AnimationTiming.AtBegin, 3000);
+            var chars = new CharacterArgs[]
             {
-                ["Monika"] = new CharacterArgs(new string[] { "Default.png", null, null },
+                new CharacterArgs("Monika", new string[] { "Default.png", null, null },
                 settings),
-                ["lilly"] = new CharacterArgs(new string[] { "lilly_basic_concerned_cas.png", null, null },
-                settings2)
+                new CharacterArgs("lilly", new string[] { "lilly_basic_concerned_cas.png", null, null },
+                settings2),
+                new CharacterArgs("PMonika", new string[] { "j.png", "1l.png", "1r.png" },
+                settings3)
             };
             var backConfig = new BackgroundArgs("Class1.png");
             scenes.Add(new Scene(st, text, chars, backConfig));
 
+            //Scene 2
+            st = SceneType.Text;
+            text = new string[] { "Это я" };
+            settings = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+                new DoublePoint(300.0, 0.0, 0.0), AnimationTiming.AtBegin, 1000);
+            settings2 = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+                new DoublePoint(-300.0, 0.0, 0.0), AnimationTiming.AtBegin, 1000);
+            settings3 = new AnimationSettings(new DoublePoint(0.0, 0.0, 0.0),
+               new DoublePoint(-600.0, 0.0, 0.0), AnimationTiming.AtBegin, 1000);
+            chars = new CharacterArgs[]
+            {
+                new CharacterArgs("Monika", new string[] { "Default_confusion.png", null, null },
+                settings),
+                new CharacterArgs("lilly", new string[] { "lilly_back_sad_cas.png", null, null },
+                settings2),
+                new CharacterArgs("PMonika", new string[] { "m.png", "1l.png", "1r.png" },
+                settings3)
+            };
+            backConfig = new BackgroundArgs("Class1.png");
+            scenes.Add(new Scene(st, text, chars, backConfig));
+
+
+            //Finall Episode config
             string episode_name = "First Episode";
             Dictionary<string, string[]> usedSprites = new Dictionary<string, string[]>
             {
                 ["Monika"] = new string[] { "Default.png", "Default_confusion.png", "Flirty_angry.png" },
-                ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" }
+                ["lilly"] = new string[] { "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" },
+                ["PMonika"] = new string[] {"j.png", "1l.png", "1r.png", "m.png" }
             };
             var usedBackgrounds = new string[] { "Class1.png", "Class2.png" };
 

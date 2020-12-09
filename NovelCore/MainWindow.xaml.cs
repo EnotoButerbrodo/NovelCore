@@ -102,24 +102,23 @@ namespace NovelCore
         {
             BackgroudImage.Source = Backgrounds[args.Background];
         }
-        void SetupCharactersAppearance(Dictionary<string, CharacterArgs> args) 
+        void SetupCharactersAppearance(CharacterArgs[] args) 
         {
-            foreach(var character in args)
+            foreach(var arg in args)
             {
-                Characters[character.Key].SetAppearance(character.Value.Sprite);
+                Characters[arg.Character].SetAppearance(arg.Sprite);
             }
         }
-        void SetupCharactersAnimation(Dictionary<string, CharacterArgs> args)
+        void SetupCharactersAnimation(CharacterArgs[] args)
         {
-            foreach (var character in args)
+            foreach (var arg in args)
             {
-                BeginCharacterAnimation(Characters[character.Key],
-                    character.Value.AnimationConfig);
+                BeginCharacterAnimation(Characters[arg.Character],
+                    arg.AnimationConfig);
             }
         }
         void BeginCharacterAnimation(Character character, AnimationSettings args)
         {
-
             if (args.StartPoint.X != args.EndPoint.X)
             {
                 DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, new TimeSpan(0, 0, 0, 0, args.Speed));
@@ -130,7 +129,6 @@ namespace NovelCore
                 DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, new TimeSpan(0, 0, 0, 0, args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
             }
-
         }
         void LoadAudio(string zipPath, string[] audios)
         {
@@ -168,7 +166,6 @@ namespace NovelCore
         {
             AudioPlayers[name].Stop();
             AudioPlayers[name].Dispose();
-            AudioPlayers.Remove(name);
         }
 
         async private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -178,17 +175,29 @@ namespace NovelCore
             LoadBackgrouds(BackgroudsZipPath, loadEpisode.UsedBackgrounds);
 
             SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
-            await Task.Delay(1000);
+            await Task.Delay(2000);
             SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
             LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav"});
             StartPlayAudio("TestSound.wav", true);
-            StartPlayAudio("SilverfishDeath1.wav", true);
-            await Task.Delay(1000);
-            PauseAudio("SilverfishDeath1.wav");
-            await Task.Delay(3000);
-            PlayAudio("SilverfishDeath1.wav");
+            //StartPlayAudio("SilverfishDeath1.wav", true);
+            await Task.Delay(5000);
 
+            SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
+            await Task.Delay(1000);
+            SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
+
+            while (true)
+            {
+                await Task.Delay(5000);
+                SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
+                SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
+
+                await Task.Delay(5000);
+
+                SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
+                SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
+            }
 
         }
 

@@ -14,12 +14,14 @@ namespace NovelCore
             string name,
             string[] usedBackgrouds,
             Dictionary<string, string[]> usedSprites,
+            string[] usedAudio,
             Scene[] scenes
             )
         {
             Name = name;
             UsedBackgrounds = usedBackgrouds;
             UsedSprites = usedSprites;
+            UsedAudio = usedAudio;
             Scenes = scenes;
         }
         [JsonPropertyName("n")]
@@ -28,6 +30,8 @@ namespace NovelCore
         public string[] UsedBackgrounds { get; set; } //Набор используемых фонов
         [JsonPropertyName("uS")]
         public Dictionary<string, string[]> UsedSprites { get; set; } //<Имя персонажа, набор спрайтов
+        [JsonPropertyName("uA")]
+        public string[] UsedAudio { get; set; }
         [JsonPropertyName("sS")]
         public Scene[] Scenes { get; set; }
         public Scene this[int number]

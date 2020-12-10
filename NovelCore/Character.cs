@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using Image = System.Windows.Controls.Image;
 using System.Windows.Threading;
+using System.Windows;
+using Point = System.Drawing.Point;
 
 
 
@@ -26,6 +28,7 @@ namespace NovelCore
                 Appearance[i].Stretch = Stretch.Uniform;
                 Spot.Children.Add(Appearance[i]);
             }
+            Appearance[0].Margin = new Thickness(0, 1, 0, 0);
             Sprites = new Dictionary<string, BitmapImage>();
 
         }
@@ -44,7 +47,6 @@ namespace NovelCore
             {
                 Spot.Width = scene.ActualWidth;
                 Spot.Height = scene.ActualHeight;
-
                 Scene.Children.Add(Spot);
             }
         }

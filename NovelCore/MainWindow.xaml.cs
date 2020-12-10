@@ -23,11 +23,13 @@ namespace NovelCore
         public MainWindow()
         {
             InitializeComponent();
+            SceneBackground.Setup(MainScene);
         }
         const string ResoursesPath = "../../../../Resourses/";
         const string CharactersZipPath = ResoursesPath + "Characters.zip";
         const string BackgroudsZipPath = ResoursesPath + "Backgrounds.zip";
         const string AudioZipPath = ResoursesPath + "Audio.zip";
+        const string GuiZipPath = ResoursesPath + "gui.zip";
         Episode LoadedEpisode;
         Dictionary<string, Character> Characters = new Dictionary<string, Character>();
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
@@ -50,6 +52,7 @@ namespace NovelCore
             //Разрешить переключение сцены
         }
 
+        #region Load
         Episode LoadEpisode(string path)
         {
             using (FileStream fs = File.Open(path, FileMode.Open))
@@ -61,7 +64,6 @@ namespace NovelCore
                 }
             }
         }
-
         void LoadBackgrouds(string zipPath, string[] backgrouds)
         {
             foreach(string back in backgrouds)
@@ -74,7 +76,7 @@ namespace NovelCore
                 else continue;
             }
         }
-        void LoadCharacters(string zipPath, Dictionary<string, string[]> sprites)
+        void LoadSprites(string zipPath, Dictionary<string, string[]> sprites)
         {
             //Пройтись по всем ключам словаря. Каждый ключ - какой то герой
             //Если в словаре существующих героев нет такого, создаем нового
@@ -98,9 +100,37 @@ namespace NovelCore
                 }            
             }
         }
+        void LoadAudio(string zipPath, string[] audios)
+        {
+            foreach (var audio in audios)
+            {
+                if (!Audio.ContainsKey(audio))
+                {
+                    var buff = ReadFromZip(zipPath, audio);
+                    buff.Position = 0;
+                    Audio.Add(audio, buff);
+                }
+                else continue;
+            }
+        }
+
+        public MemoryStream ReadFromZip(string zipPath, string fileName)
+        {
+            using (ZipFile zip = ZipFile.Read(zipPath))
+            {
+                MemoryStream stream = new MemoryStream();
+                zip[fileName].Extract(stream);
+                return stream;
+            }
+            throw new Exception("Файл не найден");
+        }
+        #endregion
+
+        #region SceneSetup
         void SetupBackgroud(BackgroundArgs args)
         {
-            BackgroudImage.Source = Backgrounds[args.Background];
+            SceneBackground.SetImage(Backgrounds[args.Background]);
+            
         }
         void SetupCharactersAppearance(CharacterArgs[] args) 
         {
@@ -130,19 +160,9 @@ namespace NovelCore
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
             }
         }
-        void LoadAudio(string zipPath, string[] audios)
-        {
-            foreach(var audio in audios)
-            {
-                if (!Audio.ContainsKey(audio))
-                {
-                    var buff = ReadFromZip(zipPath, audio);
-                    buff.Position = 0;
-                    Audio.Add(audio, buff);
-                }
-                else continue;
-            }
-        }
+        #endregion
+
+        #region Audio
         void StartPlayAudio(string name, bool loop)
         {
             if(!AudioPlayers.ContainsKey(name))
@@ -167,51 +187,55 @@ namespace NovelCore
             AudioPlayers[name].Stop();
             AudioPlayers[name].Dispose();
         }
+        #endregion
 
+        void LoadUsedResources(Episode episode)
+        {
+            LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
+            LoadSprites(CharactersZipPath, episode.UsedSprites);
+            //LoadAudio(AudioZipPath, episode.UsedAudio);
+            LoadAudio(AudioZipPath, new string[] { "TestSound.wav"});
+        }
+        void SetupScene(Episode episode, int sceneNumber)
+        {
+            SetupBackgroud(episode[sceneNumber].BackgroundConfig);
+            SetupCharactersAppearance(episode[sceneNumber].CharactersConfig);
+        }
         async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var loadEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
-            LoadCharacters(CharactersZipPath, loadEpisode.UsedSprites);
-            LoadBackgrouds(BackgroudsZipPath, loadEpisode.UsedBackgrounds);
+            var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
+            var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
+            TextBox.Setup(textImage, nameImage, MainGrid);
+            LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
+            LoadUsedResources(LoadedEpisode);
+            SetupScene(LoadedEpisode, 0);
 
-            SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
-            await Task.Delay(2000);
-            SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
+            //SetupBackgroud(loadEpisode[0].BackgroundConfig);
+            //SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
+            //await Task.Delay(2000);
+            //SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
-            LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav"});
-            StartPlayAudio("TestSound.wav", true);
-            //StartPlayAudio("SilverfishDeath1.wav", true);
-            await Task.Delay(5000);
+            //LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav"});
+            //StartPlayAudio("TestSound.wav", true);
+            //SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
+            //SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
 
-            SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
-            await Task.Delay(1000);
-            SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
+            //while (true)
+            //{
+            //    await Task.Delay(5000);
+            //    SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
+            //    SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
 
-            while (true)
-            {
-                await Task.Delay(5000);
-                SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
-                SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
+            //    await Task.Delay(5000);
 
-                await Task.Delay(5000);
-
-                SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
-                SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
-            }
+            //    SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
+            //    SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
+            //}
 
         }
 
 
-        public MemoryStream ReadFromZip(string zipPath, string fileName)
-        {
-            using (ZipFile zip = ZipFile.Read(zipPath))
-            {
-                MemoryStream stream = new MemoryStream();
-                zip[fileName].Extract(stream);
-                return stream;
-            }
-            throw new Exception("Файл не найден");
-        }
+
 
     }
 }

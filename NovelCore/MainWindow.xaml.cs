@@ -151,12 +151,12 @@ namespace NovelCore
         {
             if (args.StartPoint.X != args.EndPoint.X)
             {
-                DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, new TimeSpan(0, 0, 0, 0, args.Speed));
+                DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, TimeSpan.FromMilliseconds(args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_X);
             }
             if (args.StartPoint.Y != args.EndPoint.Y)
             {
-                DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, new TimeSpan(0, 0, 0, 0, args.Speed));
+                DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, TimeSpan.FromMilliseconds(args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
             }
         }
@@ -210,6 +210,15 @@ namespace NovelCore
             LoadUsedResources(LoadedEpisode);
             SetupScene(LoadedEpisode, 0);
 
+            await Task.Delay(1000);
+            SceneBackground.Scale(1.2, 1.2);
+            await Task.Delay(1000);
+            SceneBackground.Scale(2.0, 2.0);
+            SceneBackground.Move(0, 0);
+            await Task.Delay(1000);
+            SceneBackground.Move(0.5, 0.5);
+            await Task.Delay(1000);
+            SceneBackground.Move(1, 1);
             //SetupBackgroud(loadEpisode[0].BackgroundConfig);
             //SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
             //await Task.Delay(2000);

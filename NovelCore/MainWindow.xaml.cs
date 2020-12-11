@@ -159,6 +159,7 @@ namespace NovelCore
                 DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, TimeSpan.FromMilliseconds(args.Speed));
                 character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
             }
+
         }
         #endregion
 
@@ -205,27 +206,22 @@ namespace NovelCore
         {
             var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
             var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
-            TextBox.Setup(textImage, nameImage, MainGrid);
+            //TextBox.Setup(textImage, nameImage, MainGrid);
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
             LoadUsedResources(LoadedEpisode);
+            LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav" });
+            await Task.Delay(2000);
             SetupScene(LoadedEpisode, 0);
 
-            await Task.Delay(1000);
+            
             SceneBackground.Scale(1.2, 1.2);
-            await Task.Delay(1000);
-            SceneBackground.Scale(2.0, 2.0);
-            SceneBackground.Move(0, 0);
-            await Task.Delay(1000);
-            SceneBackground.Move(0.5, 0.5);
-            await Task.Delay(1000);
-            SceneBackground.Move(1, 1);
-            //SetupBackgroud(loadEpisode[0].BackgroundConfig);
-            //SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
-            //await Task.Delay(2000);
-            //SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
+            SceneBackground.Move(new AnimationSettings(new DoublePoint(),
+                new DoublePoint(100, 0,0),AnimationTiming.AtBegin, 1000));
+            
+            
+            SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig);
 
-            //LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav"});
-            //StartPlayAudio("TestSound.wav", true);
+            StartPlayAudio("TestSound.wav", true);
             //SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
             //SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
 

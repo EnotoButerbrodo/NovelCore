@@ -35,11 +35,19 @@ namespace NovelCore
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
         Dictionary<string, MemoryStream> Audio = new Dictionary<string, MemoryStream>();
         Dictionary<string, WaveOut> AudioPlayers = new Dictionary<string, WaveOut>();
-        //WaveFileReader reader;
-        //LoopStream wavSong;
-        //WaveOut AudioPlayer;
-        void PlayScene()
+        S
+        async void PlayScene(Scene scene)
         {
+            SetupBackgroud(scene.BackgroundConfig);
+            SetupCharactersAppearance(scene.CharactersConfig);
+            SceneBackground.Scale(1.2, 1.2);
+            SceneBackground.Move(new AnimationSettings(new DoublePoint(),
+                new DoublePoint(100, 0, 0), AnimationTiming.AtBegin, 1000));
+            await Task.Delay(1000);
+            SetupCharactersAnimation(scene.CharactersConfig, AnimationTiming.AtBegin);
+            await Task.Delay(2000);
+            
+            SetupCharactersAnimation(scene.CharactersConfig, AnimationTiming.OnTheEnd);
             //Запретить переключение сцены
             //Задать или сменить задний фон
             //Задать если нужно декорации
@@ -139,10 +147,11 @@ namespace NovelCore
                 Characters[arg.Character].SetAppearance(arg.Sprite);
             }
         }
-        void SetupCharactersAnimation(CharacterArgs[] args)
+        void SetupCharactersAnimation(CharacterArgs[] args, AnimationTiming timing)
         {
             foreach (var arg in args)
             {
+                if(arg.AnimationConfig.Timing == timing)
                 BeginCharacterAnimation(Characters[arg.Character],
                     arg.AnimationConfig);
             }
@@ -204,24 +213,23 @@ namespace NovelCore
         }
         async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
-            var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
+            //var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
+            //var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
             //TextBox.Setup(textImage, nameImage, MainGrid);
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
             LoadUsedResources(LoadedEpisode);
             LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav" });
             await Task.Delay(2000);
-            SetupScene(LoadedEpisode, 0);
-
-            
-            SceneBackground.Scale(1.2, 1.2);
-            SceneBackground.Move(new AnimationSettings(new DoublePoint(),
-                new DoublePoint(100, 0,0),AnimationTiming.AtBegin, 1000));
-            
-            
-            SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig);
-
+            //SetupScene(LoadedEpisode, 0);
             StartPlayAudio("TestSound.wav", true);
+            PlayScene(LoadedEpisode[0]);
+            
+           
+            
+            
+            //SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig);
+
+            
             //SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
             //SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
 

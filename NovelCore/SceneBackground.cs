@@ -44,7 +44,9 @@ namespace NovelCore
             if (args.StartPoint.X != args.EndPoint.X)
             {
                 DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, TimeSpan.FromMilliseconds(args.Speed));
-                Spot.BeginAnimation(Canvas.LeftProperty, anim_X);
+                Storyboard.SetTarget(anim_X, Spot);
+                Storyboard.SetTargetProperty(anim_X, new PropertyPath("(Canvas.Left)"));
+                //SceneAnimation.Children.Add(anim_X);
             }
             if (args.StartPoint.Y != args.EndPoint.Y)
             {

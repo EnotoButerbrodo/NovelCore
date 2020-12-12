@@ -23,8 +23,9 @@ namespace NovelCore
         public MainWindow()
         {
             InitializeComponent();
-            SceneBackground.Setup(MainScene);
+            InitialBackgroundImage();
         }
+
         const string ResoursesPath = "../../../../Resourses/";
         const string CharactersZipPath = ResoursesPath + "Characters.zip";
         const string BackgroudsZipPath = ResoursesPath + "Backgrounds.zip";
@@ -35,7 +36,9 @@ namespace NovelCore
         Dictionary<string, BitmapImage> Backgrounds = new Dictionary<string, BitmapImage>();
         Dictionary<string, MemoryStream> Audio = new Dictionary<string, MemoryStream>();
         Dictionary<string, WaveOut> AudioPlayers = new Dictionary<string, WaveOut>();
-        S
+        Storyboard SceneAnimation = new Storyboard();
+        Duration SceneAnimationDuration = new Duration(TimeSpan.Zero);
+        Image BackgroundImage = new Image();
         async void PlayScene(Scene scene)
         {
             SetupBackgroud(scene.BackgroundConfig);
@@ -60,6 +63,14 @@ namespace NovelCore
             //Разрешить переключение сцены
         }
 
+        void InitialBackgroundImage()
+        {
+            Panel.SetZIndex(BackgroudImage, -1);
+            BackgroudImage.RenderTransformOrigin = new Point(0.5, 0.5);
+            Canvas.SetLeft(BackgroudImage, 0);
+            BackgroudImage.Stretch = Stretch.Uniform;
+            MainScene.Children.Add(BackgroundImage);
+        }
         #region Load
         Episode LoadEpisode(string path)
         {
@@ -121,6 +132,13 @@ namespace NovelCore
                 else continue;
             }
         }
+        void LoadUsedResources(Episode episode)
+        {
+            LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
+            LoadSprites(CharactersZipPath, episode.UsedSprites);
+            //LoadAudio(AudioZipPath, episode.UsedAudio);
+            LoadAudio(AudioZipPath, new string[] { "TestSound.wav" });
+        }
 
         public MemoryStream ReadFromZip(string zipPath, string fileName)
         {
@@ -137,8 +155,12 @@ namespace NovelCore
         #region SceneSetup
         void SetupBackgroud(BackgroundArgs args)
         {
-            SceneBackground.SetImage(Backgrounds[args.Background]);
+            BackgroudImage.Source = Backgrounds[args.Background];
             
+        }
+        void SetupBackgroundAnimation(AnimationSettings args)
+        {
+            SceneBackground.Move(args);
         }
         void SetupCharactersAppearance(CharacterArgs[] args) 
         {
@@ -161,19 +183,24 @@ namespace NovelCore
             if (args.StartPoint.X != args.EndPoint.X)
             {
                 DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, TimeSpan.FromMilliseconds(args.Speed));
-                character.Spot.BeginAnimation(Canvas.LeftProperty, anim_X);
+                Storyboard.SetTarget(anim_X, character.Spot);
+                Storyboard.SetTargetProperty(anim_X, new PropertyPath("(Canvas.Left)"));
+                SceneAnimation.Children.Add(anim_X);
             }
             if (args.StartPoint.Y != args.EndPoint.Y)
             {
                 DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, TimeSpan.FromMilliseconds(args.Speed));
-                character.Spot.BeginAnimation(Canvas.LeftProperty, anim_Y);
+                Storyboard.SetTarget(anim_Y, character.Spot);
+                Storyboard.SetTargetProperty(anim_Y, new PropertyPath("(Canvas.Left)"));
+                SceneAnimation.Children.Add(anim_Y);
             }
 
         }
-        #endregion
+
+            #endregion
 
         #region Audio
-        void StartPlayAudio(string name, bool loop)
+            void StartPlayAudio(string name, bool loop)
         {
             if(!AudioPlayers.ContainsKey(name))
                 AudioPlayers.Add(name, new WaveOut());
@@ -199,13 +226,6 @@ namespace NovelCore
         }
         #endregion
 
-        void LoadUsedResources(Episode episode)
-        {
-            LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
-            LoadSprites(CharactersZipPath, episode.UsedSprites);
-            //LoadAudio(AudioZipPath, episode.UsedAudio);
-            LoadAudio(AudioZipPath, new string[] { "TestSound.wav"});
-        }
         void SetupScene(Episode episode, int sceneNumber)
         {
             SetupBackgroud(episode[sceneNumber].BackgroundConfig);
@@ -219,10 +239,23 @@ namespace NovelCore
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
             LoadUsedResources(LoadedEpisode);
             LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav" });
-            await Task.Delay(2000);
-            //SetupScene(LoadedEpisode, 0);
+            SetupCharactersAppearance(LoadedEpisode[0].CharactersConfig);
+            SetupBackgroud(LoadedEpisode[0].BackgroundConfig);
             StartPlayAudio("TestSound.wav", true);
-            PlayScene(LoadedEpisode[0]);
+            SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig, AnimationTiming.AtBegin);
+            await Task.Delay(5000);
+            DoubleAnimation anim = new DoubleAnimation();
+            anim.To = 1000;
+            anim.Duration = TimeSpan.FromSeconds(5);
+            anim.BeginTime = TimeSpan.FromMilliseconds(3000);
+            Storyboard.SetTarget(anim, Characters["Monika"].Spot);
+            Storyboard.SetTargetProperty(anim, new PropertyPath("(Canvas.Left)"));
+            SceneAnimation.Children.Add(anim);
+            SceneAnimation.Begin();
+            await Task.Delay(3000);
+            SceneAnimation.Seek(TimeSpan.FromSeconds(2));
+            
+            //PlayScene(LoadedEpisode[0]);
             
            
             

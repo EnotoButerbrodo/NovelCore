@@ -43,9 +43,8 @@ namespace NovelCore
         {
             SetupBackgroud(scene.BackgroundConfig);
             SetupCharactersAppearance(scene.CharactersConfig);
-            SceneBackground.Scale(1.2, 1.2);
-            SceneBackground.Move(new AnimationSettings(new DoublePoint(),
-                new DoublePoint(100, 0, 0), AnimationTiming.AtBegin, 1000));
+            //SceneBackground.Move(new AnimationSettings(new DoublePoint(),
+            //    new DoublePoint(100, 0, 0), AnimationTiming.AtBegin, 1000));
             await Task.Delay(1000);
             SetupCharactersAnimation(scene.CharactersConfig, AnimationTiming.AtBegin);
             await Task.Delay(2000);
@@ -71,6 +70,7 @@ namespace NovelCore
             BackgroudImage.Stretch = Stretch.Uniform;
             MainScene.Children.Add(BackgroundImage);
         }
+
         #region Load
         Episode LoadEpisode(string path)
         {
@@ -136,8 +136,8 @@ namespace NovelCore
         {
             LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
             LoadSprites(CharactersZipPath, episode.UsedSprites);
-            //LoadAudio(AudioZipPath, episode.UsedAudio);
-            LoadAudio(AudioZipPath, new string[] { "TestSound.wav" });
+            LoadAudio(AudioZipPath, episode.UsedAudio);
+            
         }
 
         public MemoryStream ReadFromZip(string zipPath, string fileName)
@@ -160,7 +160,7 @@ namespace NovelCore
         }
         void SetupBackgroundAnimation(AnimationSettings args)
         {
-            SceneBackground.Move(args);
+            //SceneBackground.Move(args);
         }
         void SetupCharactersAppearance(CharacterArgs[] args) 
         {
@@ -200,16 +200,16 @@ namespace NovelCore
             #endregion
 
         #region Audio
-            void StartPlayAudio(string name, bool loop)
+            void StartPlayAudio(AudioArgs args)
         {
-            if(!AudioPlayers.ContainsKey(name))
-                AudioPlayers.Add(name, new WaveOut());
-            WaveFileReader reader = new WaveFileReader(Audio[name]);
+            if(!AudioPlayers.ContainsKey(args.Audio))
+                AudioPlayers.Add(args.Audio, new WaveOut());
+            WaveFileReader reader = new WaveFileReader(Audio[args.Audio]);
             LoopStream wavSong = new LoopStream(reader);
-            wavSong.EnableLooping = loop;
-            AudioPlayers[name] = new WaveOut();
-            AudioPlayers[name].Init(wavSong);
-            AudioPlayers[name].Play();  
+            wavSong.EnableLooping = args.Loop;
+            AudioPlayers[args.Audio] = new WaveOut();
+            AudioPlayers[args.Audio].Init(wavSong);
+            AudioPlayers[args.Audio].Play();  
         }
         void PlayAudio(string name)
         {
@@ -226,11 +226,6 @@ namespace NovelCore
         }
         #endregion
 
-        void SetupScene(Episode episode, int sceneNumber)
-        {
-            SetupBackgroud(episode[sceneNumber].BackgroundConfig);
-            SetupCharactersAppearance(episode[sceneNumber].CharactersConfig);
-        }
         async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
@@ -238,31 +233,31 @@ namespace NovelCore
             //TextBox.Setup(textImage, nameImage, MainGrid);
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
             LoadUsedResources(LoadedEpisode);
-            LoadAudio(AudioZipPath, new string[] { "TestSound.wav", "SilverfishDeath1.wav" });
+            LoadAudio(AudioZipPath, LoadedEpisode.UsedAudio);
             SetupCharactersAppearance(LoadedEpisode[0].CharactersConfig);
             SetupBackgroud(LoadedEpisode[0].BackgroundConfig);
-            StartPlayAudio("TestSound.wav", true);
+            StartPlayAudio(LoadedEpisode[0].AudioConfig);
             SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig, AnimationTiming.AtBegin);
-            await Task.Delay(5000);
-            DoubleAnimation anim = new DoubleAnimation();
-            anim.To = 1000;
-            anim.Duration = TimeSpan.FromSeconds(5);
-            anim.BeginTime = TimeSpan.FromMilliseconds(3000);
-            Storyboard.SetTarget(anim, Characters["Monika"].Spot);
-            Storyboard.SetTargetProperty(anim, new PropertyPath("(Canvas.Left)"));
-            SceneAnimation.Children.Add(anim);
+            await Task.Delay(2000);
+            //DoubleAnimation anim = new DoubleAnimation();
+            //anim.To = 1000;
+            //anim.Duration = TimeSpan.FromSeconds(5);
+            //anim.BeginTime = TimeSpan.FromMilliseconds(3000);
+            //Storyboard.SetTarget(anim, Characters["Monika"].Spot);
+            //Storyboard.SetTargetProperty(anim, new PropertyPath("(Canvas.Left)"));
+            //SceneAnimation.Children.Add(anim);
             SceneAnimation.Begin();
-            await Task.Delay(3000);
-            SceneAnimation.Seek(TimeSpan.FromSeconds(2));
-            
+            //await Task.Delay(3000);
+            //SceneAnimation.Seek(TimeSpan.FromSeconds(2));
+
             //PlayScene(LoadedEpisode[0]);
-            
-           
-            
-            
+
+
+
+
             //SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig);
 
-            
+
             //SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
             //SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
 

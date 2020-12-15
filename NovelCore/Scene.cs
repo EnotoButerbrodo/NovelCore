@@ -13,10 +13,11 @@ namespace NovelCore
     {
         public Scene() : base() { }
         public Scene(SceneType type, string[] text, CharacterArgs[] characterConfig,
-            BackgroundArgs backConfig)
+            BackgroundArgs backConfig, AudioArgs audioConfig)
         {
             Type = type; Text = text;
             CharactersConfig = characterConfig; BackgroundConfig = backConfig;
+            AudioConfig = audioConfig;
         }
         [JsonPropertyName("fT")]
         public SceneType Type { get; set; }
@@ -27,7 +28,7 @@ namespace NovelCore
         [JsonPropertyName("bC")]
         public BackgroundArgs BackgroundConfig { get; set; }
         [JsonPropertyName("aC")]
-        public AudioArgs[] AudioConfig { get; set; }
+        public AudioArgs AudioConfig { get; set; }
 
     }
     [Serializable]

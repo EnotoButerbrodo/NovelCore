@@ -21,11 +21,13 @@ namespace NovelCore
             Name = name;
             Appearance = new Image[3];
             Spot = new Grid();
+            Spot.RenderTransformOrigin = new System.Windows.Point(0.5, 1);
             Canvas.SetLeft(Spot, 0);
             for (byte i = 0; i < 3; i++)
             {
                 Appearance[i] = new Image();
                 Appearance[i].Stretch = Stretch.Uniform;
+                Appearance[i].RenderTransformOrigin = new System.Windows.Point(0.5, 0.5);
                 Spot.Children.Add(Appearance[i]);
             }
             Appearance[0].Margin = new Thickness(0, 1, 0, 0);
@@ -39,6 +41,12 @@ namespace NovelCore
         public Grid Spot { get;private set; }// Все картинки персонажа прикреплены сюда
         public Point Position { get; set; }
         Canvas Scene { get; set; } // Сцена, на которой будет персонаж
+        
+        public void Scale(double x, double y)
+        {
+            ScaleTransform scale = new ScaleTransform(x, y);
+            Spot.RenderTransform = scale;
+        }
         
         public void EnterTheScene(Canvas scene)
         {

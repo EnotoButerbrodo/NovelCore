@@ -85,7 +85,8 @@ namespace NovelCore_Creation_Kit
                 settings3)
             };
             var backConfig = new BackgroundArgs("Class1.png");
-            scenes.Add(new Scene(st, text, chars, backConfig));
+            var audioConfig = new AudioArgs("TestSound.wav", true);
+            scenes.Add(new Scene(st, text, chars, backConfig, audioConfig));
 
             //Scene 2
             st = SceneType.Text;
@@ -106,7 +107,7 @@ namespace NovelCore_Creation_Kit
                 settings3)
             };
             backConfig = new BackgroundArgs("Class1.png");
-            scenes.Add(new Scene(st, text, chars, backConfig));
+            scenes.Add(new Scene(st, text, chars, backConfig, audioConfig));
 
 
             //Finall Episode config
@@ -118,9 +119,9 @@ namespace NovelCore_Creation_Kit
                 ["PMonika"] = new string[] {"j.png", "1l.png", "1r.png", "m.png" }
             };
             var usedBackgrounds = new string[] { "Class1.png", "Class2.png" };
-
+            var usedAudio = new string[] { "TestSound.wav" };
             var episodeToSave = new Episode(episode_name, usedBackgrounds,
-                usedSprites, scenes.ToArray());
+                usedSprites, usedAudio,  scenes.ToArray());
 
 
 

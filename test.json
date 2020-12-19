@@ -1,1 +1,143 @@
-{"n":"First Episode","uB":["Class1.png","Class2.png"],"uS":{"Monika":["Default.png","Default_confusion.png","Flirty_angry.png"],"lilly":["lilly_back_devious.png","lilly_back_sad_cas.png","lilly_back_smile_cas.png","lilly_basic_concerned_cas.png"],"PMonika":["j.png","1l.png","1r.png","m.png"]},"uA":["TestSound.wav"],"sS":[{"fT":1,"t":["\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A."],"cC":[{"c":"Monika","s":["Default.png",null,null],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":-300,"Y":0,"Z":0},"ti":0,"sp":1000}},{"c":"lilly","s":["lilly_basic_concerned_cas.png",null,null],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":300,"Y":0,"Z":0},"ti":0,"sp":2000}},{"c":"PMonika","s":["j.png","1l.png","1r.png"],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":600,"Y":0,"Z":0},"ti":0,"sp":3000}}],"bC":{"b":"Class1.png"},"aC":{"a":"TestSound.wav","lo":true}},{"fT":1,"t":["\u042D\u0442\u043E \u044F"],"cC":[{"c":"Monika","s":["Default_confusion.png",null,null],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":300,"Y":0,"Z":0},"ti":0,"sp":1000}},{"c":"lilly","s":["lilly_back_sad_cas.png",null,null],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":-300,"Y":0,"Z":0},"ti":0,"sp":1000}},{"c":"PMonika","s":["m.png","1l.png","1r.png"],"anC":{"sP":{"X":0,"Y":0,"Z":0},"eP":{"X":-600,"Y":0,"Z":0},"ti":0,"sp":1000}}],"bC":{"b":"Class1.png"},"aC":{"a":"TestSound.wav","lo":true}}],"l":2}
+{
+  "n": "First Episode",
+  "uB": [ "Class1.png", "Class2.png" ],
+  "uS": {
+    "Monika": [ "Default.png", "Default_confusion.png", "Flirty_angry.png" ],
+    "lilly": [ "lilly_back_devious.png", "lilly_back_sad_cas.png", "lilly_back_smile_cas.png", "lilly_basic_concerned_cas.png" ],
+    "PMonika": [ "j.png", "1l.png", "1r.png", "m.png" ]
+  },
+  "uA": [ "TestSound.wav" ],
+  "sS": [
+    {
+      "fT": 1,
+      "t": [ "\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A.\u041F\u0440\u0438\u0432\u0435\u0442\u0438\u043A." ],
+      "cC": [
+        {
+          "c": "Monika",
+          "s": [ "Default.png", null, null ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": -300,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 1000
+          }
+        },
+        {
+          "c": "lilly",
+          "s": [ "lilly_basic_concerned_cas.png", null, null ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": 300,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 2000
+          }
+        },
+        {
+          "c": "PMonika",
+          "s": [ "j.png", "1l.png", "1r.png" ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": 600,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 3000
+          }
+        }
+      ],
+      "bC": { "b": "Class1.png" },
+      "aC": {
+        "a": "TestSound.wav",
+        "lo": true
+      }
+    },
+    {
+      "fT": 1,
+      "t": [ "\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F\u042D\u0442\u043E \u044F" ],
+      "cC": [
+        {
+          "c": "Monika",
+          "s": [ "Default_confusion.png", null, null ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": 300,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 1000
+          }
+        },
+        {
+          "c": "lilly",
+          "s": [ "lilly_back_sad_cas.png", null, null ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": -300,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 1000
+          }
+        },
+        {
+          "c": "PMonika",
+          "s": [ "m.png", "1l.png", "1r.png" ],
+          "anC": {
+            "sP": {
+              "X": 0,
+              "Y": 0,
+              "Z": 0
+            },
+            "eP": {
+              "X": -600,
+              "Y": 0,
+              "Z": 0
+            },
+            "ti": 0,
+            "sp": 1000
+          }
+        }
+      ],
+      "bC": { "b": "Class1.png" },
+      "aC": {
+        "a": "TestSound.wav",
+        "lo": true
+      }
+    }
+  ],
+  "l": 2
+}

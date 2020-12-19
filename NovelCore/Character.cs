@@ -23,6 +23,7 @@ namespace NovelCore
             Spot = new Grid();
             Spot.RenderTransformOrigin = new System.Windows.Point(0.5, 1);
             Canvas.SetLeft(Spot, 0);
+            Canvas.SetBottom(Spot, 0);
             for (byte i = 0; i < 3; i++)
             {
                 Appearance[i] = new Image();

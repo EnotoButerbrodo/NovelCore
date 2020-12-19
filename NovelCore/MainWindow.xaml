@@ -29,8 +29,9 @@
               Background="Black">
             <TextBlock Text="Hui" Margin="20, 20, 20, 20" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" FontSize="24" Foreground="White"/>
         </Grid>
-        <Image x:Name="BackgroudImage" Grid.Row="0" Grid.RowSpan="8" Grid.Column="0" Grid.ColumnSpan="8" Stretch="Uniform" Panel.ZIndex="0"/>
+
         <Canvas x:Name="MainScene" Grid.Row="0" Grid.RowSpan="8" Grid.Column="0" Grid.ColumnSpan="8">
+            <Button Content="Skip" Canvas.Left="1170" Canvas.Top="42" Click="Button_Click" Width="56"/>
         </Canvas>
     </Grid>
 </Window>

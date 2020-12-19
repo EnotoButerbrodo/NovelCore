@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Media;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
@@ -23,7 +25,13 @@ namespace NovelCore
         public MainWindow()
         {
             InitializeComponent();
-            InitialBackgroundImage();
+            MainScene.Children.Add(BackgroundImage.Spot); 
+            InitialClickSpot();
+            TextBox.TextAnimationComplete += delegate ()
+            {
+                IsSceneComplete = true;
+            };
+            
         }
 
         const string ResoursesPath = "../../../../Resourses/";
@@ -37,19 +45,26 @@ namespace NovelCore
         Dictionary<string, MemoryStream> Audio = new Dictionary<string, MemoryStream>();
         Dictionary<string, WaveOut> AudioPlayers = new Dictionary<string, WaveOut>();
         Storyboard SceneAnimation = new Storyboard();
-        Duration SceneAnimationDuration = new Duration(TimeSpan.Zero);
-        Image BackgroundImage = new Image();
-        async void PlayScene(Scene scene)
+        SceneImage BackgroundImage = new SceneImage();
+        bool IsSceneComplete = false;
+        static CancellationTokenSource Skip = new CancellationTokenSource();
+        static CancellationToken SkipToken = Skip.Token;
+        int SceneCounter = 0;
+        
+        void PlayScene(Scene scene)
         {
+            IsSceneComplete = false;
+            TextBox.ClearText();
             SetupBackgroud(scene.BackgroundConfig);
             SetupCharactersAppearance(scene.CharactersConfig);
-            //SceneBackground.Move(new AnimationSettings(new DoublePoint(),
-            //    new DoublePoint(100, 0, 0), AnimationTiming.AtBegin, 1000));
-            await Task.Delay(1000);
-            SetupCharactersAnimation(scene.CharactersConfig, AnimationTiming.AtBegin);
-            await Task.Delay(2000);
+            StartPlayAudio(scene.AudioConfig);
             
-            SetupCharactersAnimation(scene.CharactersConfig, AnimationTiming.OnTheEnd);
+            SetupSceneAnimation(scene);
+            SceneAnimation.Begin();
+
+            
+            //TextBox.SetText(scene.Text[0], 10);
+            //await Task.Delay(2000)
             //Запретить переключение сцены
             //Задать или сменить задний фон
             //Задать если нужно декорации
@@ -61,16 +76,32 @@ namespace NovelCore
             //Применить OnTheEnd анимации
             //Разрешить переключение сцены
         }
-
-        void InitialBackgroundImage()
+        void SkipSceneAnimations()
         {
-            Panel.SetZIndex(BackgroudImage, -1);
-            BackgroudImage.RenderTransformOrigin = new Point(0.5, 0.5);
-            Canvas.SetLeft(BackgroudImage, 0);
-            BackgroudImage.Stretch = Stretch.Uniform;
-            MainScene.Children.Add(BackgroundImage);
+            SceneAnimation.SkipToFill();
+        }
+        void InitialClickSpot()
+        {
+            Grid ClickSpot = new Grid();
+            ClickSpot.Background = Brushes.Red;
+            Panel.SetZIndex(ClickSpot, 100);
+            MainScene.Children.Add(ClickSpot);
+            ClickSpot.Width = 100;
+            ClickSpot.Height = 100;
+            ClickSpot.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(ClickSpot_Click);
+
         }
 
+        void ClickSpot_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (!IsSceneComplete)
+            {
+                SkipSceneAnimations();
+                return;
+            }
+            else
+                PlayScene(LoadedEpisode[++SceneCounter % 2]);
+        }
         #region Load
         Episode LoadEpisode(string path)
         {
@@ -137,7 +168,6 @@ namespace NovelCore
             LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
             LoadSprites(CharactersZipPath, episode.UsedSprites);
             LoadAudio(AudioZipPath, episode.UsedAudio);
-            
         }
 
         public MemoryStream ReadFromZip(string zipPath, string fileName)
@@ -155,8 +185,7 @@ namespace NovelCore
         #region SceneSetup
         void SetupBackgroud(BackgroundArgs args)
         {
-            BackgroudImage.Source = Backgrounds[args.Background];
-            
+            BackgroundImage.SetImage(Backgrounds[args.Background]);
         }
         void SetupBackgroundAnimation(AnimationSettings args)
         {
@@ -167,43 +196,54 @@ namespace NovelCore
             foreach(var arg in args)
             {
                 Characters[arg.Character].SetAppearance(arg.Sprite);
-            }
-        }
-        void SetupCharactersAnimation(CharacterArgs[] args, AnimationTiming timing)
-        {
-            foreach (var arg in args)
-            {
-                if(arg.AnimationConfig.Timing == timing)
-                BeginCharacterAnimation(Characters[arg.Character],
-                    arg.AnimationConfig);
-            }
-        }
-        void BeginCharacterAnimation(Character character, AnimationSettings args)
-        {
-            if (args.StartPoint.X != args.EndPoint.X)
-            {
-                DoubleAnimation anim_X = new DoubleAnimation(args.EndPoint.X, TimeSpan.FromMilliseconds(args.Speed));
-                Storyboard.SetTarget(anim_X, character.Spot);
-                Storyboard.SetTargetProperty(anim_X, new PropertyPath("(Canvas.Left)"));
-                SceneAnimation.Children.Add(anim_X);
-            }
-            if (args.StartPoint.Y != args.EndPoint.Y)
-            {
-                DoubleAnimation anim_Y = new DoubleAnimation(args.EndPoint.Y, TimeSpan.FromMilliseconds(args.Speed));
-                Storyboard.SetTarget(anim_Y, character.Spot);
-                Storyboard.SetTargetProperty(anim_Y, new PropertyPath("(Canvas.Left)"));
-                SceneAnimation.Children.Add(anim_Y);
-            }
 
+            }
         }
+        void SetupSceneAnimation(Scene scene)
+        {
+            SceneAnimation = new Storyboard();
+            
+            SceneAnimation.Completed += new EventHandler((o, e) =>
+            {
+                TextBox.SetText(scene.Text[0]);
+            });
+
+            void AddToStroyboard(Grid Spot, AnimationSettings args)
+            {
+                if (args.EndPoint.X != null)
+                {
+                    DoubleAnimation anim_X = new DoubleAnimation((double)args.EndPoint.X, TimeSpan.FromMilliseconds(args.Speed));
+                    Storyboard.SetTarget(anim_X, Spot);
+                    Storyboard.SetTargetProperty(anim_X, new PropertyPath("(Canvas.Left)"));
+                    SceneAnimation.Children.Add(anim_X);
+                }
+                if (args.EndPoint.Y != null)
+                {
+                    DoubleAnimation anim_Y = new DoubleAnimation((double)args.EndPoint.Y, TimeSpan.FromMilliseconds(args.Speed));
+                    Storyboard.SetTarget(anim_Y, Spot);
+                    Storyboard.SetTargetProperty(anim_Y, new PropertyPath("(Canvas.Bottom)"));
+                    SceneAnimation.Children.Add(anim_Y);
+                }
+            }
+            //Персонажи
+            foreach (var charAnim in scene.CharactersConfig)
+            {
+                if (charAnim.AnimationConfig.Timing == AnimationTiming.AtBegin)
+                    AddToStroyboard(Characters[charAnim.Character].Spot,
+                    charAnim.AnimationConfig);
+            }
+            //Задний фон
+        }
+
 
             #endregion
 
         #region Audio
             void StartPlayAudio(AudioArgs args)
         {
-            if(!AudioPlayers.ContainsKey(args.Audio))
+            if (!AudioPlayers.ContainsKey(args.Audio))
                 AudioPlayers.Add(args.Audio, new WaveOut());
+            else return;
             WaveFileReader reader = new WaveFileReader(Audio[args.Audio]);
             LoopStream wavSong = new LoopStream(reader);
             wavSong.EnableLooping = args.Loop;
@@ -228,17 +268,18 @@ namespace NovelCore
 
         async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
-            //var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
-            //TextBox.Setup(textImage, nameImage, MainGrid);
+            var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
+            var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
+            TextBox.Setup(textImage, nameImage, MainGrid);
             LoadedEpisode = LoadEpisode(@"S:\Users\Игорь\source\repos\NovelCore\test.json");
             LoadUsedResources(LoadedEpisode);
-            LoadAudio(AudioZipPath, LoadedEpisode.UsedAudio);
-            SetupCharactersAppearance(LoadedEpisode[0].CharactersConfig);
-            SetupBackgroud(LoadedEpisode[0].BackgroundConfig);
-            StartPlayAudio(LoadedEpisode[0].AudioConfig);
-            SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig, AnimationTiming.AtBegin);
+            BackgroundImage.Scale(1.2, 1.2);
             await Task.Delay(2000);
+            PlayScene(LoadedEpisode[0]);
+            SceneAnimation.Begin();
+            //SceneAnimation.SkipToFill();
+            //PlayScene(LoadedEpisode[1]);
+            //SceneAnimation.SkipToFill();
             //DoubleAnimation anim = new DoubleAnimation();
             //anim.To = 1000;
             //anim.Duration = TimeSpan.FromSeconds(5);
@@ -246,37 +287,16 @@ namespace NovelCore
             //Storyboard.SetTarget(anim, Characters["Monika"].Spot);
             //Storyboard.SetTargetProperty(anim, new PropertyPath("(Canvas.Left)"));
             //SceneAnimation.Children.Add(anim);
-            SceneAnimation.Begin();
+
             //await Task.Delay(3000);
             //SceneAnimation.Seek(TimeSpan.FromSeconds(2));
 
             //PlayScene(LoadedEpisode[0]);
-
-
-
-
-            //SetupCharactersAnimation(LoadedEpisode[0].CharactersConfig);
-
-
-            //SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
-            //SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
-
-            //while (true)
-            //{
-            //    await Task.Delay(5000);
-            //    SetupCharactersAppearance(loadEpisode[0].CharactersConfig);
-            //    SetupCharactersAnimation(loadEpisode[0].CharactersConfig);
-
-            //    await Task.Delay(5000);
-
-            //    SetupCharactersAppearance(loadEpisode[1].CharactersConfig);
-            //    SetupCharactersAnimation(loadEpisode[1].CharactersConfig);
-            //}
-
         }
 
-
-
-
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            SkipSceneAnimations();
+        }
     }
 }

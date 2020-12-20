@@ -26,7 +26,7 @@ namespace NovelCore
         {
             InitializeComponent();
             MainScene.Children.Add(BackgroundImage.Spot); 
-            InitialClickSpot();
+            //InitialClickSpot();
             TextBox.TextAnimationComplete += delegate ()
             {
                 IsSceneComplete = true;
@@ -61,20 +61,6 @@ namespace NovelCore
             
             SetupSceneAnimation(scene);
             SceneAnimation.Begin();
-
-            
-            //TextBox.SetText(scene.Text[0], 10);
-            //await Task.Delay(2000)
-            //Запретить переключение сцены
-            //Задать или сменить задний фон
-            //Задать если нужно декорации
-            //Задать и применить если нужно анимации для сцены
-            //Расставить персонажей на сцену
-            //Задать им нужные спрайты
-            //Применить к ним AtFirst анимации
-            //Применить анимации отображения текста
-            //Применить OnTheEnd анимации
-            //Разрешить переключение сцены
         }
         void SkipSceneAnimations()
         {
@@ -83,11 +69,11 @@ namespace NovelCore
         void InitialClickSpot()
         {
             Grid ClickSpot = new Grid();
-            ClickSpot.Background = Brushes.Red;
+            ClickSpot.Background = Brushes.Transparent;
             Panel.SetZIndex(ClickSpot, 100);
             MainScene.Children.Add(ClickSpot);
-            ClickSpot.Width = 100;
-            ClickSpot.Height = 100;
+            ClickSpot.Width = MainScene.ActualWidth;
+            ClickSpot.Height = MainScene.ActualHeight;
             ClickSpot.PreviewMouseLeftButtonDown += new MouseButtonEventHandler(ClickSpot_Click);
 
         }
@@ -102,85 +88,7 @@ namespace NovelCore
             else
                 PlayScene(LoadedEpisode[++SceneCounter % 2]);
         }
-        #region Load
-        Episode LoadEpisode(string path)
-        {
-            using (FileStream fs = File.Open(path, FileMode.Open))
-            {
-                using (var reader = new StreamReader(fs))
-                {
-                    string file = reader.ReadToEnd();
-                    return JsonSerializer.Deserialize<Episode>(file, new JsonSerializerOptions { IgnoreNullValues = true });
-                }
-            }
-        }
-        void LoadBackgrouds(string zipPath, string[] backgrouds)
-        {
-            foreach(string back in backgrouds)
-            {
-                if (!Backgrounds.ContainsKey(back))
-                {
-                    BitmapImage image = ReadFromZip(zipPath, back).toBitmapImage();
-                    Backgrounds.Add(back, image);
-                }
-                else continue;
-            }
-        }
-        void LoadSprites(string zipPath, Dictionary<string, string[]> sprites)
-        {
-            //Пройтись по всем ключам словаря. Каждый ключ - какой то герой
-            //Если в словаре существующих героев нет такого, создаем нового
-            //Пройтись по всем спрайтам прочитанного списка. Если персонаж не имеет
-            //...нужных спрайтов - загрузить их и добавить в коллекцию герою
-            foreach(var character in sprites)
-            {
-                if (!Characters.ContainsKey(character.Key))
-                {
-                    Characters.Add(character.Key, new Character(character.Key));
-                    Characters[character.Key].EnterTheScene(MainScene);
-                }
-                foreach(var sprite in character.Value)
-                {
-                    if (!Characters[character.Key].SpriteInCollection(sprite))
-                    {
-                        BitmapImage image = ReadFromZip(zipPath,
-                            $"{character.Key}\\{sprite}").toBitmapImage();
-                        Characters[character.Key].AddSprite(sprite, image);
-                    }
-                }            
-            }
-        }
-        void LoadAudio(string zipPath, string[] audios)
-        {
-            foreach (var audio in audios)
-            {
-                if (!Audio.ContainsKey(audio))
-                {
-                    var buff = ReadFromZip(zipPath, audio);
-                    buff.Position = 0;
-                    Audio.Add(audio, buff);
-                }
-                else continue;
-            }
-        }
-        void LoadUsedResources(Episode episode)
-        {
-            LoadBackgrouds(BackgroudsZipPath, episode.UsedBackgrounds);
-            LoadSprites(CharactersZipPath, episode.UsedSprites);
-            LoadAudio(AudioZipPath, episode.UsedAudio);
-        }
-
-        public MemoryStream ReadFromZip(string zipPath, string fileName)
-        {
-            using (ZipFile zip = ZipFile.Read(zipPath))
-            {
-                MemoryStream stream = new MemoryStream();
-                zip[fileName].Extract(stream);
-                return stream;
-            }
-            throw new Exception("Файл не найден");
-        }
-        #endregion
+        
 
         #region SceneSetup
         void SetupBackgroud(BackgroundArgs args)
@@ -268,6 +176,7 @@ namespace NovelCore
 
         async private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            InitialClickSpot();
             var textImage = ReadFromZip(GuiZipPath, "textbox.png").toBitmapImage();
             var nameImage = ReadFromZip(GuiZipPath, "namebox.png").toBitmapImage();
             TextBox.Setup(textImage, nameImage, MainGrid);
@@ -276,7 +185,6 @@ namespace NovelCore
             BackgroundImage.Scale(1.2, 1.2);
             await Task.Delay(2000);
             PlayScene(LoadedEpisode[0]);
-            SceneAnimation.Begin();
             //SceneAnimation.SkipToFill();
             //PlayScene(LoadedEpisode[1]);
             //SceneAnimation.SkipToFill();
